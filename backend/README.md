@@ -1,7 +1,8 @@
 ## 1. How to run it
 * install packages:
-pip install uvicorn fastapi python-multipart pyjwt bcrypt numpy Pillow
+pip install -r requirements.txt
 * Start the server:
+cd backend
 uvicorn app.main:app --reload --port 8000
 * Open the Interactive API docs to test everything: http://localhost:8000/api/docs
 
