@@ -232,8 +232,8 @@ onMounted(load)
   font-size: 0.74rem;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #5b7cff, #2f4ce0);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
 }
 
@@ -256,9 +256,9 @@ onMounted(load)
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(50, 60, 80, 0.3);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  background: rgba(8, 6, 20, 0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   display: grid;
   place-items: center;
   padding: 24px;
@@ -295,6 +295,10 @@ onMounted(load)
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid rgba(255, 107, 126, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
 }
 
 .modal__actions {

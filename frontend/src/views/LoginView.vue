@@ -190,17 +190,18 @@ async function submitRegister() {
   position: absolute;
   top: -80px;
   right: -80px;
-  width: 220px;
-  height: 220px;
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
   background: radial-gradient(
     circle at center,
-    rgba(91, 124, 255, 0.35) 0%,
-    rgba(165, 236, 255, 0.25) 45%,
+    rgba(140, 110, 255, 0.55) 0%,
+    rgba(80, 200, 255, 0.35) 45%,
     transparent 70%
   );
-  filter: blur(30px);
+  filter: blur(40px);
   pointer-events: none;
+  z-index: 0;
 }
 
 .brand-mark {
@@ -210,10 +211,10 @@ async function submitRegister() {
   display: grid;
   place-items: center;
   margin-bottom: 22px;
-  background: linear-gradient(135deg, #5b7cff, #2f4ce0);
+  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    4px 6px 18px rgba(61, 91, 238, 0.45);
+    0 8px 22px rgba(80, 110, 255, 0.55);
 }
 
 .login-title {

@@ -10,3 +10,14 @@
 [2m10:29:15 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/api.js[22m
 [2m10:29:26 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/auth.js[22m
 [2m10:29:55 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/views/LoginView.vue, /src/views/LoginView.vue?vue&type=style&index=0&scoped=45f5edd7&lang.css[22m
+[2m10:38:23 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/theme.css[22m
+[2m10:38:32 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.vue[22m
+[2m10:38:48 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/views/LoginView.vue?vue&type=style&index=0&scoped=45f5edd7&lang.css[22m
+[2m10:38:54 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/views/EmployeesView.vue?vue&type=style&index=0&scoped=524b7f86&lang.css[22m
+[2m10:38:58 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/views/EmployeesView.vue?vue&type=style&index=0&scoped=524b7f86&lang.css[22m
+[2m10:38:58 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/views/EmployeesView.vue?vue&type=style&index=0&scoped=524b7f86&lang.css[22m
+[2m10:39:05 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/layouts/AppLayout.vue?vue&type=style&index=0&scoped=e7291ef4&lang.css[22m
+[2m10:39:06 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/layouts/AppLayout.vue?vue&type=style&index=0&scoped=e7291ef4&lang.css[22m
+[2m10:39:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/layouts/AppLayout.vue?vue&type=style&index=0&scoped=e7291ef4&lang.css[22m
+[2m10:39:11 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/views/DashboardView.vue?vue&type=style&index=0&scoped=336c5134&lang.css[22m
+[2m10:39:23 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/views/DashboardView.vue?vue&type=style&index=0&scoped=336c5134&lang.css[22m

@@ -270,8 +270,8 @@ onMounted(async () => {
 }
 
 .trend__bar--present { background: linear-gradient(180deg, #7c93ff, #3d5bee); }
-.trend__bar--late { background: linear-gradient(180deg, #ffc46b, #d9820b); }
-.trend__bar--absent { background: linear-gradient(180deg, #c3ccdb, #9aa6b8); }
+.trend__bar--late    { background: linear-gradient(180deg, #ffc46b, #d9820b); }
+.trend__bar--absent  { background: linear-gradient(180deg, #c3ccdb, #9aa6b8); }
 
 .trend__date { font-size: 0.74rem; }
 

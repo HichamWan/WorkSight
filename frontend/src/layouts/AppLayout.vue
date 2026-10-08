@@ -144,10 +144,10 @@ function handleLogout() {
   border-radius: 13px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #5b7cff, #2f4ce0);
+  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    3px 4px 12px rgba(61, 91, 238, 0.45);
+    0 6px 16px rgba(80, 110, 255, 0.5);
 }
 
 .brand-name {
@@ -183,10 +183,12 @@ function handleLogout() {
 }
 
 .nav-link--active {
-  background: var(--glass-bg-strong);
-  border-color: var(--glass-border);
-  color: var(--accent-strong);
-  box-shadow: var(--shadow-neu-sm);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  box-shadow:
+    0 6px 16px -4px rgba(80, 110, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .nav-link__icon {
@@ -220,7 +222,7 @@ function handleLogout() {
   font-size: 0.78rem;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #5b7cff, #2f4ce0);
+  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
   flex-shrink: 0;
 }
