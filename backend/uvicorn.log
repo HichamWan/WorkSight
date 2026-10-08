@@ -1,0 +1,27 @@
+[DATABASE INFO] Successfully loaded persisted states from local file schema.
+INFO:     Started server process [20952]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:63983 - "POST /api/hr/auth/register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59772 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59772 - "POST /api/hr/auth/register HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:60658 - "OPTIONS /api/hr/auth/register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60658 - "POST /api/hr/auth/register HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:60658 - "POST /api/hr/auth/register HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:64139 - "POST /api/hr/auth/register HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64139 - "OPTIONS /api/hr/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64139 - "OPTIONS /api/hr/dashboard/today HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "OPTIONS /api/hr/dashboard/analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63994 - "GET /api/hr/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64139 - "GET /api/hr/dashboard/today HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "GET /api/hr/dashboard/analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "OPTIONS /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "OPTIONS /api/hr/attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "GET /api/hr/attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "OPTIONS /api/hr/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "GET /api/hr/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53252 - "GET /api/hr/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58496 - "GET /api/hr/dashboard/today HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57702 - "GET /api/hr/dashboard/analytics HTTP/1.1" 200 OK
