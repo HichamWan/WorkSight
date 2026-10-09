@@ -18,9 +18,10 @@
           :to="item.to"
           class="nav-link"
           active-class="nav-link--active"
+          :exact="item.to === '/'"
         >
           <span class="nav-link__icon" v-html="item.icon"></span>
-          {{ item.label }}
+          {{ t(item.key) }}
         </router-link>
       </nav>
 
@@ -33,19 +34,21 @@
           </div>
         </div>
         <button class="btn btn--ghost btn--sm sidebar__logout" @click="handleLogout">
-          Log out
+          {{ t('logout') }}
         </button>
       </div>
     </aside>
 
     <main class="content">
-      <header class="topbar glass glass--soft">
+      <header class="topbar glass glass--strong">
         <div>
-          <h1 class="topbar__title">{{ currentTitle }}</h1>
+          <h1 class="topbar__title">{{ pageTitle }}</h1>
           <p class="topbar__date muted">{{ todayLabel }}</p>
         </div>
         <div class="topbar__spacer"></div>
-        <span class="chip chip--success">System online</span>
+        <LanguageSwitcher />
+        <ThemeToggle />
+        <span class="chip chip--success">{{ t('systemOnline') }}</span>
       </header>
 
       <router-view />
@@ -57,41 +60,45 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import ThemeToggle from '../components/ThemeToggle.vue'
 
 const route = useRoute()
 const router = useRouter()
 const { user, logout } = useAuth()
+const { t } = useI18n()
 
 const navItems = [
   {
     to: '/',
-    label: 'Dashboard',
+    key: 'dashboard',
     icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>'
   },
   {
     to: '/employees',
-    label: 'Employees',
-    icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+    key: 'employees',
+    icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>'
   },
   {
     to: '/attendance',
-    label: 'Attendance',
-    icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18M9 14l2 2 4-4"/></svg>'
+    key: 'attendance',
+    icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/><path d="M9 14l2 2 4-4"/></svg>'
   },
   {
     to: '/alerts',
-    label: 'Alerts',
+    key: 'alerts',
     icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'
   }
 ]
 
-const currentTitle = computed(() => {
+const pageTitle = computed(() => {
   const item = navItems.find((n) => n.to === route.path)
-  return item ? item.label : 'WorkSight'
+  return item ? t(item.key) : t('dashboard')
 })
 
 const todayLabel = computed(() =>
-  new Date().toLocaleDateString('en-US', {
+  new Date().toLocaleDateString(undefined, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -139,15 +146,13 @@ function handleLogout() {
 }
 
 .brand-mark {
-  width: 38px;
-  height: 38px;
-  border-radius: 13px;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 6px 16px rgba(80, 110, 255, 0.5);
+  background: var(--accent);
+  color: #fff;
 }
 
 .brand-name {
@@ -178,17 +183,15 @@ function handleLogout() {
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--row-hover);
   color: var(--text-primary);
 }
 
 .nav-link--active {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.35);
-  color: #fff;
-  box-shadow:
-    0 6px 16px -4px rgba(80, 110, 255, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  color: var(--accent-strong);
+  box-shadow: var(--shadow-soft);
 }
 
 .nav-link__icon {
@@ -200,7 +203,7 @@ function handleLogout() {
   flex-direction: column;
   gap: 10px;
   padding-top: 14px;
-  border-top: 1px solid rgba(163, 177, 198, 0.3);
+  border-top: 1px solid var(--hairline);
 }
 
 .user-card {
@@ -210,20 +213,19 @@ function handleLogout() {
   padding: 10px 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border-soft);
-  background: var(--glass-bg-soft);
+  background: var(--glass-fill-c);
 }
 
 .user-card__avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: var(--accent);
   flex-shrink: 0;
 }
 

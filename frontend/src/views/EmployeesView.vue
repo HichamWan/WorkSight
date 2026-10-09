@@ -224,16 +224,15 @@ onMounted(load)
 }
 
 .emp-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: var(--accent);
   flex-shrink: 0;
 }
 
@@ -256,9 +255,7 @@ onMounted(load)
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(8, 6, 20, 0.55);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.45);
   display: grid;
   place-items: center;
   padding: 24px;

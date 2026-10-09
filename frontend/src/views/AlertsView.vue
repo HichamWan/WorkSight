@@ -101,14 +101,13 @@ onMounted(async () => {
 }
 
 .alert-item__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 13px;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border);
 }
 
 .alert-item__icon.chip--warning { background: var(--warning-soft); color: var(--warning); }

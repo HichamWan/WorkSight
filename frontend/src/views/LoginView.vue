@@ -1,5 +1,10 @@
 <template>
   <div class="login-stage">
+    <div class="login-controls">
+      <LanguageSwitcher />
+      <ThemeToggle />
+    </div>
+
     <div class="login-card glass glass--strong">
       <div class="login-card__glow" aria-hidden="true"></div>
 
@@ -10,34 +15,34 @@
         </svg>
       </div>
 
-      <h1 class="login-title">{{ isRegister ? 'Create account' : 'Welcome back' }}</h1>
+      <h1 class="login-title">{{ isRegister ? t('createAccountTitle') : t('welcomeBack') }}</h1>
       <p class="login-subtitle muted">
-        {{ isRegister ? 'Set up your company workspace in seconds' : 'Sign in to the WorkSight management portal' }}
+        {{ isRegister ? t('signUpSubtitle') : t('signInSubtitle') }}
       </p>
 
       <!-- Sign in -->
       <form v-if="!isRegister" class="login-form" @submit.prevent="submitLogin">
         <div class="field">
-          <label class="field__label" for="li-username">Username</label>
+          <label class="field__label" for="li-username">{{ t('username') }}</label>
           <input
             id="li-username"
             v-model="loginForm.username"
             class="input"
             type="text"
-            placeholder="e.g. alice"
+            :placeholder="t('usernamePlaceholder')"
             autocomplete="username"
             required
           />
         </div>
 
         <div class="field">
-          <label class="field__label" for="li-password">Password</label>
+          <label class="field__label" for="li-password">{{ t('password') }}</label>
           <input
             id="li-password"
             v-model="loginForm.password"
             class="input"
             type="password"
-            placeholder="••••••••"
+            :placeholder="t('passwordPlaceholder')"
             autocomplete="current-password"
             required
           />
@@ -46,58 +51,58 @@
         <p v-if="error" class="login-error">{{ error }}</p>
 
         <button class="btn btn--primary login-submit" type="submit" :disabled="loading">
-          {{ loading ? 'Signing in…' : 'Sign in' }}
+          {{ loading ? t('signingIn') : t('signIn') }}
         </button>
       </form>
 
       <!-- Register -->
       <form v-else class="login-form" @submit.prevent="submitRegister">
         <div class="field">
-          <label class="field__label" for="rg-company">Company name <span class="muted">(optional)</span></label>
+          <label class="field__label" for="rg-company">{{ t('companyNameOptional') }}</label>
           <input
             id="rg-company"
             v-model="registerForm.company_name"
             class="input"
             type="text"
-            placeholder="e.g. Acme Ltd"
+            :placeholder="t('companyName')"
             autocomplete="organization"
           />
         </div>
 
         <div class="field">
-          <label class="field__label" for="rg-username">Username</label>
+          <label class="field__label" for="rg-username">{{ t('username') }}</label>
           <input
             id="rg-username"
             v-model="registerForm.username"
             class="input"
             type="text"
-            placeholder="Choose a username"
+            :placeholder="t('chooseUsername')"
             autocomplete="username"
             required
           />
         </div>
 
         <div class="field">
-          <label class="field__label" for="rg-email">Email</label>
+          <label class="field__label" for="rg-email">{{ t('email') }}</label>
           <input
             id="rg-email"
             v-model="registerForm.email"
             class="input"
             type="email"
-            placeholder="you@company.com"
+            :placeholder="t('emailPlaceholder')"
             autocomplete="email"
             required
           />
         </div>
 
         <div class="field">
-          <label class="field__label" for="rg-password">Password</label>
+          <label class="field__label" for="rg-password">{{ t('password') }}</label>
           <input
             id="rg-password"
             v-model="registerForm.password"
             class="input"
             type="password"
-            placeholder="At least 6 characters"
+            :placeholder="t('passwordHint')"
             autocomplete="new-password"
             minlength="6"
             required
@@ -107,18 +112,18 @@
         <p v-if="error" class="login-error">{{ error }}</p>
 
         <button class="btn btn--primary login-submit" type="submit" :disabled="loading">
-          {{ loading ? 'Creating account…' : 'Create account' }}
+          {{ loading ? t('creatingAccount') : t('createAccount') }}
         </button>
       </form>
 
       <p class="login-switch">
         <template v-if="!isRegister">
-          Don't have an account?
-          <button type="button" class="link-btn" @click="switchMode(true)">Create one</button>
+          {{ t('noAccount') }}
+          <button type="button" class="link-btn" @click="switchMode(true)">{{ t('createOne') }}</button>
         </template>
         <template v-else>
-          Already have an account?
-          <button type="button" class="link-btn" @click="switchMode(false)">Sign in</button>
+          {{ t('haveAccount') }}
+          <button type="button" class="link-btn" @click="switchMode(false)">{{ t('signInLink') }}</button>
         </template>
       </p>
     </div>
@@ -129,9 +134,13 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../auth'
+import { useI18n } from '../i18n'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
+import ThemeToggle from '../components/ThemeToggle.vue'
 
 const router = useRouter()
 const { login, register, loading } = useAuth()
+const { t } = useI18n()
 
 const isRegister = ref(false)
 const error = ref('')
@@ -150,7 +159,7 @@ async function submitLogin() {
     await login(loginForm.username.trim(), loginForm.password)
     router.push({ name: 'dashboard' })
   } catch (e) {
-    error.value = e.message || 'Login failed'
+    error.value = e.message || t('loginFailed')
   }
 }
 
@@ -165,7 +174,7 @@ async function submitRegister() {
     })
     router.push({ name: 'dashboard' })
   } catch (e) {
-    error.value = e.message || 'Registration failed'
+    error.value = e.message || t('registerFailed')
   }
 }
 </script>
@@ -176,6 +185,16 @@ async function submitRegister() {
   display: grid;
   place-items: center;
   padding: 24px;
+  position: relative;
+}
+
+.login-controls {
+  position: absolute;
+  top: 22px;
+  inset-inline-end: 26px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
 }
 
 .login-card {
@@ -185,36 +204,20 @@ async function submitRegister() {
   overflow: hidden;
 }
 
-/* iridescent liquid sheen sweeping the top corner */
+/* subtle accent edge on the corner — flat, no blur */
 .login-card__glow {
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 240px;
-  height: 240px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at center,
-    rgba(140, 110, 255, 0.55) 0%,
-    rgba(80, 200, 255, 0.35) 45%,
-    transparent 70%
-  );
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .brand-mark {
-  width: 52px;
-  height: 52px;
-  border-radius: 17px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
   margin-bottom: 22px;
-  background: linear-gradient(135deg, #7a5cff, #2bd2ff);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 8px 22px rgba(80, 110, 255, 0.55);
+  background: var(--accent);
+  color: #fff;
 }
 
 .login-title {
@@ -266,7 +269,5 @@ async function submitRegister() {
   padding: 0;
 }
 
-.link-btn:hover {
-  text-decoration: underline;
-}
+.link-btn:hover { text-decoration: underline; }
 </style>

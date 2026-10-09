@@ -13,28 +13,22 @@
 
     <div class="grid">
       <!-- Today overview -->
-      <section class="glass panel">
+      <section class="panel">
         <h2 class="panel__title">Today</h2>
         <div class="today">
           <div class="today__ring">
             <svg viewBox="0 0 120 120" width="130" height="130">
-              <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(163,177,198,0.35)" stroke-width="11" />
+              <circle cx="60" cy="60" r="52" fill="none" class="ring-track" stroke-width="11" />
               <circle
                 cx="60" cy="60" r="52" fill="none"
-                stroke="url(#ringGrad)" stroke-width="11" stroke-linecap="round"
+                stroke="var(--accent)" stroke-width="11" stroke-linecap="round"
                 :stroke-dasharray="`${checkedInPct * 3.267} 327`"
                 transform="rotate(-90 60 60)"
               />
-              <defs>
-                <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#5b7cff" />
-                  <stop offset="100%" stop-color="#2f4ce0" />
-                </linearGradient>
-              </defs>
-              <text x="60" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="#232a35">
+              <text x="60" y="58" text-anchor="middle" font-size="20" font-weight="700" class="ring-value">
                 {{ checkedInPct }}%
               </text>
-              <text x="60" y="76" text-anchor="middle" font-size="10" fill="#8b95a3">checked in</text>
+              <text x="60" y="76" text-anchor="middle" font-size="10" class="ring-label">checked in</text>
             </svg>
           </div>
           <ul class="today__list">
@@ -59,7 +53,7 @@
       </section>
 
       <!-- Attendance trend -->
-      <section class="glass panel">
+      <section class="panel">
         <h2 class="panel__title">Attendance trend</h2>
         <div class="trend">
           <div v-for="day in trend" :key="day.date" class="trend__day">
@@ -161,14 +155,13 @@ onMounted(async () => {
 }
 
 .stat__icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border);
 }
 
 .stat__icon--accent { background: var(--accent-soft); color: var(--accent); }
@@ -264,14 +257,13 @@ onMounted(async () => {
 
 .trend__bar {
   width: 14px;
-  border-radius: 7px 7px 3px 3px;
+  border-radius: 4px 4px 2px 2px;
   transition: height 0.4s ease;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
-.trend__bar--present { background: linear-gradient(180deg, #7c93ff, #3d5bee); }
-.trend__bar--late    { background: linear-gradient(180deg, #ffc46b, #d9820b); }
-.trend__bar--absent  { background: linear-gradient(180deg, #c3ccdb, #9aa6b8); }
+.trend__bar--present { background: var(--accent); }
+.trend__bar--late    { background: var(--warning); }
+.trend__bar--absent  { background: var(--border-strong); }
 
 .trend__date { font-size: 0.74rem; }
 
@@ -296,7 +288,7 @@ onMounted(async () => {
   border-radius: 50%;
 }
 
-.dot--present { background: #3d5bee; }
-.dot--late { background: #d9820b; }
-.dot--absent { background: #9aa6b8; }
+.dot--present { background: var(--accent); }
+.dot--late { background: var(--warning); }
+.dot--absent { background: var(--border-strong); }
 </style>
