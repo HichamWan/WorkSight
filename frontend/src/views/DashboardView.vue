@@ -55,21 +55,7 @@
       <!-- Attendance trend -->
       <section class="panel">
         <h2 class="panel__title">Attendance trend</h2>
-        <div class="trend">
-          <div v-for="day in trend" :key="day.date" class="trend__day">
-            <div class="trend__bars">
-              <div class="trend__bar trend__bar--present" :style="barStyle(day.present)" :title="`Present: ${day.present}`"></div>
-              <div class="trend__bar trend__bar--late" :style="barStyle(day.late, 60)" :title="`Late: ${day.late}`"></div>
-              <div class="trend__bar trend__bar--absent" :style="barStyle(day.absent, 60)" :title="`Absent: ${day.absent}`"></div>
-            </div>
-            <span class="trend__date muted">{{ shortDate(day.date) }}</span>
-          </div>
-        </div>
-        <div class="legend">
-          <span class="legend__item"><i class="dot dot--present"></i>Present</span>
-          <span class="legend__item"><i class="dot dot--late"></i>Late</span>
-          <span class="legend__item"><i class="dot dot--absent"></i>Absent</span>
-        </div>
+        <TrendChart :trend="trend" />
       </section>
     </div>
   </div>
@@ -78,6 +64,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { api } from '../api'
+import TrendChart from '../components/TrendChart.vue'
 
 const summary = ref({})
 const today = ref({})
@@ -115,14 +102,6 @@ const checkedInPct = computed(() => {
   if (!total) return 0
   return Math.round(((today.value.checked_in ?? 0) / total) * 100)
 })
-
-function barStyle(value, max = 60) {
-  return { height: `${Math.max(6, Math.min(100, (value / max) * 100))}%` }
-}
-
-function shortDate(iso) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
 
 onMounted(async () => {
   try {
@@ -231,64 +210,4 @@ onMounted(async () => {
 .text-success { color: var(--success); }
 .text-warning { color: var(--warning); }
 
-/* Trend panel */
-.trend {
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-  height: 160px;
-  margin-bottom: 12px;
-}
-
-.trend__day {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  height: 100%;
-}
-
-.trend__bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  flex: 1;
-}
-
-.trend__bar {
-  width: 14px;
-  border-radius: 4px 4px 2px 2px;
-  transition: height 0.4s ease;
-}
-
-.trend__bar--present { background: var(--accent); }
-.trend__bar--late    { background: var(--warning); }
-.trend__bar--absent  { background: var(--border-strong); }
-
-.trend__date { font-size: 0.74rem; }
-
-.legend {
-  display: flex;
-  gap: 18px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(163, 177, 198, 0.2);
-}
-
-.legend__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-}
-
-.dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-}
-
-.dot--present { background: var(--accent); }
-.dot--late { background: var(--warning); }
-.dot--absent { background: var(--border-strong); }
 </style>

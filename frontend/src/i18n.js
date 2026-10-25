@@ -56,7 +56,30 @@ const messages = {
     loadingAttendance: 'Loading attendance records…', noAttendance: 'No attendance records found.',
     // alerts
     activeAlerts: 'Active alerts', total: 'total',
-    loadingAlerts: 'Loading alerts…', noAlerts: 'No alerts — everything looks good.'
+    loadingAlerts: 'Loading alerts…', noAlerts: 'No alerts — everything looks good.',
+    // reports
+    reports: 'Reports', reportType: 'Report type', attendanceReport: 'Attendance report',
+    workHoursReport: 'Work hours report', exportCsv: 'Export CSV', exportExcel: 'Export Excel',
+    loadingReport: 'Loading report…', noReportData: 'No data for this report.',
+    rowsLabel: 'rows', exportSuccess: 'Downloaded {file}', exportFailed: 'Export failed',
+    // filters
+    apply: 'Apply', clear: 'Clear', from: 'From', to: 'To',
+    // employee detail
+    backToEmployees: '← Back to employees', employeeDetails: 'Details',
+    memberSince: 'Member since', faceRegistered: 'Face registered', faceNotSet: 'Face not set',
+    attendanceHistory: 'Attendance history', noHistory: 'No attendance records for this employee.',
+    loadingEmployee: 'Loading employee…', employeeNotFound: 'Employee not found.',
+    // manual attendance
+    manualAttendance: 'Manual check-in / check-out', manualAttendanceHint: 'Web fallback for the desktop face-scan client',
+    checkInAction: 'Check in', checkOutAction: 'Check out', selectEmployee: 'Select employee',
+    checkInDone: 'Check-in recorded', checkOutDone: 'Check-out recorded',
+    // alerts filter
+    all: 'All',
+    // employees
+    edit: 'Edit', deleteEmployeeTitle: 'Delete employee',
+    employeeCreated: 'Employee created', employeeUpdated: 'Employee updated', employeeDeleted: 'Employee deleted',
+    // session
+    sessionExpired: 'Session expired. Please sign in again.'
   },
   zh: {
     appName: 'WorkSight',
@@ -97,7 +120,23 @@ const messages = {
     status: '状态',
     loadingAttendance: '正在加载考勤记录…', noAttendance: '暂无考勤记录。',
     activeAlerts: '活跃预警', total: '共',
-    loadingAlerts: '正在加载预警…', noAlerts: '暂无预警 — 一切正常。'
+    loadingAlerts: '正在加载预警…', noAlerts: '暂无预警 — 一切正常。',
+    reports: '报表', reportType: '报表类型', attendanceReport: '考勤报表',
+    workHoursReport: '工时报表', exportCsv: '导出 CSV', exportExcel: '导出 Excel',
+    loadingReport: '正在加载报表…', noReportData: '此报表暂无数据。',
+    rowsLabel: '行', exportSuccess: '已下载 {file}', exportFailed: '导出失败',
+    apply: '应用', clear: '清除', from: '开始', to: '结束',
+    backToEmployees: '← 返回员工列表', employeeDetails: '详细信息',
+    memberSince: '入职时间', faceRegistered: '人脸已录入', faceNotSet: '人脸未录入',
+    attendanceHistory: '考勤历史', noHistory: '该员工暂无考勤记录。',
+    loadingEmployee: '正在加载员工…', employeeNotFound: '未找到该员工。',
+    manualAttendance: '手动签到 / 签退', manualAttendanceHint: '桌面端人脸扫描的网页替代方案',
+    checkInAction: '签到', checkOutAction: '签退', selectEmployee: '选择员工',
+    checkInDone: '签到已记录', checkOutDone: '签退已记录',
+    all: '全部',
+    edit: '编辑', deleteEmployeeTitle: '删除员工',
+    employeeCreated: '员工已创建', employeeUpdated: '员工已更新', employeeDeleted: '员工已删除',
+    sessionExpired: '会话已过期，请重新登录。'
   },
   ar: {
     appName: 'WorkSight',
@@ -138,7 +177,23 @@ const messages = {
     status: 'الحالة',
     loadingAttendance: 'جارٍ تحميل سجلات الحضور…', noAttendance: 'لا توجد سجلات حضور.',
     activeAlerts: 'التنبيهات النشطة', total: 'إجمالي',
-    loadingAlerts: 'جارٍ تحميل التنبيهات…', noAlerts: 'لا توجد تنبيهات — كل شيء على ما يرام.'
+    loadingAlerts: 'جارٍ تحميل التنبيهات…', noAlerts: 'لا توجد تنبيهات — كل شيء على ما يرام.',
+    reports: 'التقارير', reportType: 'نوع التقرير', attendanceReport: 'تقرير الحضور',
+    workHoursReport: 'تقرير ساعات العمل', exportCsv: 'تصدير CSV', exportExcel: 'تصدير Excel',
+    loadingReport: 'جارٍ تحميل التقرير…', noReportData: 'لا توجد بيانات لهذا التقرير.',
+    rowsLabel: 'صف', exportSuccess: 'تم تنزيل {file}', exportFailed: 'فشل التصدير',
+    apply: 'تطبيق', clear: 'مسح', from: 'من', to: 'إلى',
+    backToEmployees: '← العودة إلى الموظفين', employeeDetails: 'التفاصيل',
+    memberSince: 'عضو منذ', faceRegistered: 'الوجه مسجل', faceNotSet: 'الوجه غير مسجل',
+    attendanceHistory: 'سجل الحضور', noHistory: 'لا توجد سجلات حضور لهذا الموظف.',
+    loadingEmployee: 'جارٍ تحميل الموظف…', employeeNotFound: 'الموظف غير موجود.',
+    manualAttendance: 'تسجيل الحضور / الانصراف يدوياً', manualAttendanceHint: 'بديل ويب لعميل مسح الوجه على سطح المكتب',
+    checkInAction: 'تسجيل الحضور', checkOutAction: 'تسجيل الانصراف', selectEmployee: 'اختر موظفاً',
+    checkInDone: 'تم تسجيل الحضور', checkOutDone: 'تم تسجيل الانصراف',
+    all: 'الكل',
+    edit: 'تعديل', deleteEmployeeTitle: 'حذف الموظف',
+    employeeCreated: 'تم إنشاء الموظف', employeeUpdated: 'تم تحديث الموظف', employeeDeleted: 'تم حذف الموظف',
+    sessionExpired: 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.'
   },
   fr: {
     appName: 'WorkSight',
@@ -179,7 +234,23 @@ const messages = {
     status: 'Statut',
     loadingAttendance: 'Chargement des présences…', noAttendance: 'Aucun enregistrement de présence.',
     activeAlerts: 'Alertes actives', total: 'au total',
-    loadingAlerts: 'Chargement des alertes…', noAlerts: 'Aucune alerte — tout va bien.'
+    loadingAlerts: 'Chargement des alertes…', noAlerts: 'Aucune alerte — tout va bien.',
+    reports: 'Rapports', reportType: 'Type de rapport', attendanceReport: 'Rapport de présence',
+    workHoursReport: 'Rapport des heures', exportCsv: 'Exporter CSV', exportExcel: 'Exporter Excel',
+    loadingReport: 'Chargement du rapport…', noReportData: 'Aucune donnée pour ce rapport.',
+    rowsLabel: 'lignes', exportSuccess: '{file} téléchargé', exportFailed: 'Échec de l’export',
+    apply: 'Appliquer', clear: 'Effacer', from: 'Du', to: 'Au',
+    backToEmployees: '← Retour aux employés', employeeDetails: 'Détails',
+    memberSince: 'Membre depuis', faceRegistered: 'Visage enregistré', faceNotSet: 'Visage non défini',
+    attendanceHistory: 'Historique de présence', noHistory: 'Aucune présence pour cet employé.',
+    loadingEmployee: 'Chargement de l’employé…', employeeNotFound: 'Employé introuvable.',
+    manualAttendance: 'Pointage manuel', manualAttendanceHint: 'Alternative web au client de scan facial',
+    checkInAction: 'Arrivée', checkOutAction: 'Départ', selectEmployee: 'Choisir un employé',
+    checkInDone: 'Arrivée enregistrée', checkOutDone: 'Départ enregistré',
+    all: 'Tous',
+    edit: 'Modifier', deleteEmployeeTitle: 'Supprimer l’employé',
+    employeeCreated: 'Employé créé', employeeUpdated: 'Employé mis à jour', employeeDeleted: 'Employé supprimé',
+    sessionExpired: 'Session expirée. Veuillez vous reconnecter.'
   },
   es: {
     appName: 'WorkSight',
@@ -220,7 +291,23 @@ const messages = {
     status: 'Estado',
     loadingAttendance: 'Cargando registros de asistencia…', noAttendance: 'No hay registros de asistencia.',
     activeAlerts: 'Alertas activas', total: 'en total',
-    loadingAlerts: 'Cargando alertas…', noAlerts: 'Sin alertas — todo en orden.'
+    loadingAlerts: 'Cargando alertas…', noAlerts: 'Sin alertas — todo en orden.',
+    reports: 'Informes', reportType: 'Tipo de informe', attendanceReport: 'Informe de asistencia',
+    workHoursReport: 'Informe de horas', exportCsv: 'Exportar CSV', exportExcel: 'Exportar Excel',
+    loadingReport: 'Cargando informe…', noReportData: 'Sin datos para este informe.',
+    rowsLabel: 'filas', exportSuccess: 'Descargado {file}', exportFailed: 'Error al exportar',
+    apply: 'Aplicar', clear: 'Limpiar', from: 'Desde', to: 'Hasta',
+    backToEmployees: '← Volver a empleados', employeeDetails: 'Detalles',
+    memberSince: 'Miembro desde', faceRegistered: 'Rostro registrado', faceNotSet: 'Rostro no definido',
+    attendanceHistory: 'Historial de asistencia', noHistory: 'Sin registros para este empleado.',
+    loadingEmployee: 'Cargando empleado…', employeeNotFound: 'Empleado no encontrado.',
+    manualAttendance: 'Fichaje manual', manualAttendanceHint: 'Alternativa web al cliente de escaneo facial',
+    checkInAction: 'Entrada', checkOutAction: 'Salida', selectEmployee: 'Seleccionar empleado',
+    checkInDone: 'Entrada registrada', checkOutDone: 'Salida registrada',
+    all: 'Todos',
+    edit: 'Editar', deleteEmployeeTitle: 'Eliminar empleado',
+    employeeCreated: 'Empleado creado', employeeUpdated: 'Empleado actualizado', employeeDeleted: 'Empleado eliminado',
+    sessionExpired: 'Sesión expirada. Vuelve a iniciar sesión.'
   }
 }
 

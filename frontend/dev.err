@@ -1,0 +1,74 @@
+[2m3:49:17 PM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "../views/EmployeeDetailView.vue" from "src/router/index.js". Does the file exist?
+[2m3:49:17 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../views/EmployeeDetailView.vue" from "src/router/index.js". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/WorkSight/frontend/src/router/index.js[39m:9:41
+[33m  7  |  import DashboardView from '../views/DashboardView.vue'
+  8  |  import EmployeesView from '../views/EmployeesView.vue'
+  9  |  import EmployeeDetailView from '../views/EmployeeDetailView.vue'
+     |                                          ^
+  10 |  import AttendanceView from '../views/AttendanceView.vue'
+  11 |  import AlertsView from '../views/AlertsView.vue'[39m
+      at TransformPluginContext._formatError (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at async file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 7)
+      at async TransformPluginContext.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m3:49:17 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../views/EmployeeDetailView.vue" from "src/router/index.js". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/WorkSight/frontend/src/router/index.js[39m:9:41
+[33m  7  |  import DashboardView from '../views/DashboardView.vue'
+  8  |  import EmployeesView from '../views/EmployeesView.vue'
+  9  |  import EmployeeDetailView from '../views/EmployeeDetailView.vue'
+     |                                          ^
+  10 |  import AttendanceView from '../views/AttendanceView.vue'
+  11 |  import AlertsView from '../views/AlertsView.vue'[39m
+      at TransformPluginContext._formatError (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at async file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 7)
+      at async TransformPluginContext.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m3:49:54 PM[22m [31m[1m[vite][22m[39m Pre-transform error: Failed to resolve import "../components/Pager.vue" from "src/views/EmployeeDetailView.vue". Does the file exist?
+[2m3:49:55 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../components/Pager.vue" from "src/views/EmployeeDetailView.vue". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/WorkSight/frontend/src/views/EmployeeDetailView.vue[39m:94:24
+[33m  3  |  import { api } from '../api'
+  4  |  import { useTable } from '../table'
+  5  |  import Pager from '../components/Pager.vue'
+     |                         ^
+  6  |  
+  7  |  [39m
+      at TransformPluginContext._formatError (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at async file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m3:49:55 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "../components/Pager.vue" from "src/views/EmployeeDetailView.vue". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mD:/WorkSight/frontend/src/views/EmployeeDetailView.vue[39m:94:24
+[33m  3  |  import { api } from '../api'
+  4  |  import { useTable } from '../table'
+  5  |  import Pager from '../components/Pager.vue'
+     |                         ^
+  6  |  
+  7  |  [39m
+      at TransformPluginContext._formatError (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41)
+      at TransformPluginContext.error (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16)
+      at normalizeUrl (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23)
+      at async file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39
+      at async Promise.all (index 4)
+      at async TransformPluginContext.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7)
+      at async PluginContainer.transform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///D:/WorkSight/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)

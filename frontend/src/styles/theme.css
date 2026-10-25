@@ -1,44 +1,47 @@
 /* ============================================================
    WorkSight — Clean, Professional Design System
-   Light (default) + Dark (black + pistachio green accent)
+   Light (default) + Dark (black + shiny red accent)
    ============================================================ */
 
 /* -------- LIGHT (default) -------- */
 :root {
-  --bg:            #F4F5F3;
+  --bg:            #F6F6F7;
   --surface:       #FFFFFF;
-  --surface-2:     #F9FAF8;
-  --surface-3:     #ECEEE9;
-  --border:        #E3E6E0;
-  --border-strong: #CFD3CB;
+  --surface-2:     #FAFAFB;
+  --surface-3:     #F0F0F2;
+  --border:        #E5E5E8;
+  --border-strong: #CFD0D5;
 
-  --text:       #1A201A;
-  --text-2:     #4D554B;
-  --text-muted: #8A9186;
+  --text:       #191A1C;
+  --text-2:     #4B4D52;
+  --text-muted: #8A8D95;
 
-  --accent:        #6FA84D;   /* pistachio */
-  --accent-strong: #5C8B3D;
-  --accent-soft:   rgba(111, 168, 77, 0.10);
-  --accent-border: rgba(111, 168, 77, 0.32);
+  --accent:        #E5342B;   /* shiny red */
+  --accent-strong: #C21F18;
+  --accent-soft:   rgba(229, 52, 43, 0.10);
+  --accent-border: rgba(229, 52, 43, 0.34);
+  /* Glossy gradient used for branding surfaces (logo, highlights) */
+  --accent-gradient: linear-gradient(135deg, #FF6A5A 0%, #E5342B 55%, #B8121B 100%);
+  --accent-glow:     rgba(229, 52, 43, 0.35);
 
   --success: #2E9D6E; --success-soft: rgba(46, 157, 110, 0.10);
   --warning: #B27A14; --warning-soft: rgba(178, 122, 20, 0.10);
-  --danger:  #C84B4B; --danger-soft:  rgba(200, 75, 75, 0.10);
+  --danger:  #8E1B2E; --danger-soft:  rgba(142, 27, 46, 0.10);
 
-  --hairline:    #E5E8E2;
-  --hairline-2:  #EFF1EC;
-  --row-hover:   rgba(111, 168, 77, 0.05);
-  --th-bg:       #F6F7F4;
-  --scrollbar:   rgba(120, 130, 120, 0.32);
+  --hairline:    #E8E8EB;
+  --hairline-2:  #F0F0F2;
+  --row-hover:   rgba(229, 52, 43, 0.05);
+  --th-bg:       #F7F7F8;
+  --scrollbar:   rgba(120, 120, 130, 0.32);
 
   --input-bg:       #FFFFFF;
-  --input-border:   #D6DAD3;
+  --input-border:   #D8D9DE;
   --input-focus:    #FFFFFF;
-  --input-ring:     rgba(111, 168, 77, 0.22);
+  --input-ring:     rgba(229, 52, 43, 0.22);
 
-  --shadow-sm: 0 1px 2px rgba(20, 30, 15, 0.05);
-  --shadow:    0 1px 3px rgba(20, 30, 15, 0.06), 0 1px 2px rgba(20, 30, 15, 0.04);
-  --shadow-md: 0 4px 12px -4px rgba(20, 30, 15, 0.10);
+  --shadow-sm: 0 1px 2px rgba(20, 22, 26, 0.05);
+  --shadow:    0 1px 3px rgba(20, 22, 26, 0.06), 0 1px 2px rgba(20, 22, 26, 0.04);
+  --shadow-md: 0 4px 12px -4px rgba(20, 22, 26, 0.10);
 
   --radius:     8px;
   --radius-md:  10px;
@@ -50,38 +53,40 @@
   color-scheme: light;
 }
 
-/* -------- DARK (black + pistachio) -------- */
+/* -------- DARK (black + shiny red) -------- */
 html[data-theme='dark'] {
-  --bg:            #0E1310;
-  --surface:       #161E18;
-  --surface-2:     #1B2520;
-  --surface-3:     #0B110D;
-  --border:        #2A332C;
-  --border-strong: #3A443B;
+  --bg:            #0F1012;
+  --surface:       #17181B;
+  --surface-2:     #1D1F23;
+  --surface-3:     #0C0D0F;
+  --border:        #2B2D32;
+  --border-strong: #3B3E45;
 
-  --text:       #E8EFE3;
-  --text-2:     rgba(232, 239, 227, 0.72);
-  --text-muted: rgba(232, 239, 227, 0.50);
+  --text:       #EDEDF0;
+  --text-2:     rgba(237, 237, 240, 0.72);
+  --text-muted: rgba(237, 237, 240, 0.50);
 
-  --accent:        #8FCB6C;
-  --accent-strong: #A8DA82;
-  --accent-soft:   rgba(143, 203, 108, 0.15);
-  --accent-border: rgba(143, 203, 108, 0.40);
+  --accent:        #FF4B45;
+  --accent-strong: #FF6B63;
+  --accent-soft:   rgba(255, 75, 69, 0.15);
+  --accent-border: rgba(255, 75, 69, 0.40);
+  --accent-gradient: linear-gradient(135deg, #FF7A70 0%, #FF4B45 55%, #D91F1A 100%);
+  --accent-glow:     rgba(255, 75, 69, 0.40);
 
   --success: #5CC995; --success-soft: rgba(92, 201, 149, 0.14);
   --warning: #E2B458; --warning-soft: rgba(226, 180, 88, 0.14);
-  --danger:  #FF7A85; --danger-soft:  rgba(255, 122, 133, 0.14);
+  --danger:  #FF6B7A; --danger-soft:  rgba(255, 107, 122, 0.14);
 
-  --hairline:   #2A332C;
-  --hairline-2: #1F2822;
-  --row-hover:  rgba(143, 203, 108, 0.06);
-  --th-bg:      #131C16;
+  --hairline:   #2B2D32;
+  --hairline-2: #202226;
+  --row-hover:  rgba(255, 75, 69, 0.07);
+  --th-bg:      #141619;
   --scrollbar:  rgba(255, 255, 255, 0.18);
 
-  --input-bg:     #1A221C;
-  --input-border: #2F3A33;
-  --input-focus:  #1F2822;
-  --input-ring:   rgba(143, 203, 108, 0.28);
+  --input-bg:     #1A1C20;
+  --input-border: #313440;
+  --input-focus:  #202226;
+  --input-ring:   rgba(255, 75, 69, 0.28);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow:    0 1px 3px rgba(0, 0, 0, 0.35);
@@ -163,14 +168,16 @@ body {
 
 .btn--primary {
   color: #fff;
-  background: var(--accent);
+  /* Glossy highlight layered over the base accent */
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+  background-color: var(--accent);
   border-color: var(--accent);
   box-shadow: var(--shadow-sm);
 }
 .btn--primary:hover {
-  background: var(--accent-strong);
+  background-color: var(--accent-strong);
   border-color: var(--accent-strong);
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 10px var(--accent-glow);
 }
 
 .btn--ghost {

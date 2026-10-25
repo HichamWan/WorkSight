@@ -13,7 +13,7 @@
 
       <nav class="sidebar__nav">
         <router-link
-          v-for="item in navItems"
+          v-for="item in visibleNav"
           :key="item.to"
           :to="item.to"
           class="nav-link"
@@ -30,7 +30,7 @@
           <div class="user-card__avatar">{{ initials }}</div>
           <div class="user-card__info">
             <span class="user-card__name">{{ user?.username || 'User' }}</span>
-            <span class="user-card__role muted">{{ user?.role || '—' }}</span>
+            <span class="user-card__role muted">{{ currentRole }}</span>
           </div>
         </div>
         <button class="btn btn--ghost btn--sm sidebar__logout" @click="handleLogout">
@@ -61,6 +61,8 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../auth'
 import { useI18n } from '../i18n'
+import { api } from '../api'
+import { can, roleLabel } from '../roles'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import ThemeToggle from '../components/ThemeToggle.vue'
 
@@ -73,27 +75,40 @@ const navItems = [
   {
     to: '/',
     key: 'dashboard',
+    permission: 'viewDashboard',
     icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>'
   },
   {
     to: '/employees',
     key: 'employees',
+    permission: 'viewEmployees',
     icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>'
   },
   {
     to: '/attendance',
     key: 'attendance',
+    permission: 'viewAttendance',
     icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/><path d="M9 14l2 2 4-4"/></svg>'
   },
   {
     to: '/alerts',
     key: 'alerts',
+    permission: 'viewAlerts',
     icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'
+  },
+  {
+    to: '/reports',
+    key: 'reports',
+    permission: 'viewReports',
+    icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3 3 3-3"/></svg>'
   }
 ]
 
+const visibleNav = computed(() => navItems.filter((item) => can(item.permission, user.value)))
+const currentRole = computed(() => roleLabel(user.value))
+
 const pageTitle = computed(() => {
-  const item = navItems.find((n) => n.to === route.path)
+  const item = visibleNav.value.find((n) => n.to === route.path)
   return item ? t(item.key) : t('dashboard')
 })
 
@@ -110,7 +125,13 @@ const initials = computed(() =>
   (user.value?.username || 'U').slice(0, 2).toUpperCase()
 )
 
-function handleLogout() {
+async function handleLogout() {
+  try {
+    await api.logout()
+  } catch (e) {
+    // Always clear the local session, even if the API call fails.
+    console.warn('Server logout failed:', e)
+  }
   logout()
   router.push({ name: 'login' })
 }
@@ -151,7 +172,8 @@ function handleLogout() {
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: var(--accent);
+  background: var(--accent-gradient);
+  box-shadow: 0 2px 10px var(--accent-glow);
   color: #fff;
 }
 

@@ -216,7 +216,8 @@ async function submitRegister() {
   display: grid;
   place-items: center;
   margin-bottom: 22px;
-  background: var(--accent);
+  background: var(--accent-gradient);
+  box-shadow: 0 4px 16px var(--accent-glow);
   color: #fff;
 }
 
