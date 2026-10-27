@@ -38,6 +38,10 @@ class CheckInReq(BaseModel):
     employee_id: int
     timestamp: datetime
 
+class ChangePasswordReq(BaseModel):
+    current_password: str
+    new_password: str
+
 # ==========================================
 # 7. HR AUTHENTICATION
 # ==========================================
@@ -129,6 +133,19 @@ def hr_register(payload: HRRegisterReq):
             "status": user["status"]
         }
     }
+
+@router.post("/hr/auth/change-password")
+def hr_change_password(payload: ChangePasswordReq, current_user: dict = Depends(get_current_user)):
+    user = next((u for u in db_users if u["id"] == current_user["user_id"]), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="User account profile missing")
+    if not verify_password(payload.current_password, user["hashed_password"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    if len(payload.new_password) < 6:
+        raise HTTPException(status_code=422, detail="New password must be at least 6 characters")
+    user["hashed_password"] = hash_password(payload.new_password)
+    save_to_json()
+    return {"success": True, "message": "Password updated successfully"}
 
 @router.post("/hr/auth/logout")
 def hr_logout(current_user: dict = Depends(get_current_user)):

@@ -79,7 +79,23 @@ const messages = {
     edit: 'Edit', deleteEmployeeTitle: 'Delete employee',
     employeeCreated: 'Employee created', employeeUpdated: 'Employee updated', employeeDeleted: 'Employee deleted',
     // session
-    sessionExpired: 'Session expired. Please sign in again.'
+    sessionExpired: 'Session expired. Please sign in again.',
+    // settings
+    settings: 'Settings', profile: 'Profile', account: 'Account',
+    changePassword: 'Change password', currentPassword: 'Current password',
+    newPassword: 'New password', confirmPassword: 'Confirm new password',
+    passwordChanged: 'Password updated successfully',
+    passwordMismatch: 'New passwords do not match',
+    wrongCurrentPassword: 'Current password is incorrect',
+    passwordTooShort: 'New password must be at least 6 characters',
+    preferences: 'Preferences', appearance: 'Appearance', language: 'Language',
+    dark: 'Dark', light: 'Light', security: 'Security',
+    // notifications
+    notifications: 'Notifications', noNotifications: 'No notifications',
+    viewAllAlerts: 'View all alerts',
+    // global search
+    search: 'Search employees, actions…', searchResults: 'Results',
+    noSearchResults: 'No matches found'
   },
   zh: {
     appName: 'WorkSight',
@@ -136,7 +152,20 @@ const messages = {
     all: '全部',
     edit: '编辑', deleteEmployeeTitle: '删除员工',
     employeeCreated: '员工已创建', employeeUpdated: '员工已更新', employeeDeleted: '员工已删除',
-    sessionExpired: '会话已过期，请重新登录。'
+    sessionExpired: '会话已过期，请重新登录。',
+    settings: '设置', profile: '个人资料', account: '账户',
+    changePassword: '修改密码', currentPassword: '当前密码',
+    newPassword: '新密码', confirmPassword: '确认新密码',
+    passwordChanged: '密码修改成功',
+    passwordMismatch: '两次输入的新密码不一致',
+    wrongCurrentPassword: '当前密码不正确',
+    passwordTooShort: '新密码至少需要 6 个字符',
+    preferences: '偏好设置', appearance: '外观', language: '语言',
+    dark: '深色', light: '浅色', security: '安全',
+    notifications: '通知', noNotifications: '暂无通知',
+    viewAllAlerts: '查看全部预警',
+    search: '搜索员工、功能…', searchResults: '搜索结果',
+    noSearchResults: '未找到匹配项'
   },
   ar: {
     appName: 'WorkSight',
@@ -193,7 +222,20 @@ const messages = {
     all: 'الكل',
     edit: 'تعديل', deleteEmployeeTitle: 'حذف الموظف',
     employeeCreated: 'تم إنشاء الموظف', employeeUpdated: 'تم تحديث الموظف', employeeDeleted: 'تم حذف الموظف',
-    sessionExpired: 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.'
+    sessionExpired: 'انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.',
+    settings: 'الإعدادات', profile: 'الملف الشخصي', account: 'الحساب',
+    changePassword: 'تغيير كلمة المرور', currentPassword: 'كلمة المرور الحالية',
+    newPassword: 'كلمة المرور الجديدة', confirmPassword: 'تأكيد كلمة المرور',
+    passwordChanged: 'تم تحديث كلمة المرور بنجاح',
+    passwordMismatch: 'كلمتا المرور غير متطابقتين',
+    wrongCurrentPassword: 'كلمة المرور الحالية غير صحيحة',
+    passwordTooShort: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
+    preferences: 'التفضيلات', appearance: 'المظهر', language: 'اللغة',
+    dark: 'داكن', light: 'فاتح', security: 'الأمان',
+    notifications: 'الإشعارات', noNotifications: 'لا توجد إشعارات',
+    viewAllAlerts: 'عرض كل التنبيهات',
+    search: 'ابحث عن موظفين…', searchResults: 'النتائج',
+    noSearchResults: 'لا توجد نتائج'
   },
   fr: {
     appName: 'WorkSight',
@@ -250,7 +292,20 @@ const messages = {
     all: 'Tous',
     edit: 'Modifier', deleteEmployeeTitle: 'Supprimer l’employé',
     employeeCreated: 'Employé créé', employeeUpdated: 'Employé mis à jour', employeeDeleted: 'Employé supprimé',
-    sessionExpired: 'Session expirée. Veuillez vous reconnecter.'
+    sessionExpired: 'Session expirée. Veuillez vous reconnecter.',
+    settings: 'Paramètres', profile: 'Profil', account: 'Compte',
+    changePassword: 'Changer le mot de passe', currentPassword: 'Mot de passe actuel',
+    newPassword: 'Nouveau mot de passe', confirmPassword: 'Confirmer le mot de passe',
+    passwordChanged: 'Mot de passe mis à jour',
+    passwordMismatch: 'Les mots de passe ne correspondent pas',
+    wrongCurrentPassword: 'Mot de passe actuel incorrect',
+    passwordTooShort: 'Au moins 6 caractères requis',
+    preferences: 'Préférences', appearance: 'Apparence', language: 'Langue',
+    dark: 'Sombre', light: 'Clair', security: 'Sécurité',
+    notifications: 'Notifications', noNotifications: 'Aucune notification',
+    viewAllAlerts: 'Voir toutes les alertes',
+    search: 'Rechercher des employés…', searchResults: 'Résultats',
+    noSearchResults: 'Aucun résultat'
   },
   es: {
     appName: 'WorkSight',
@@ -307,7 +362,20 @@ const messages = {
     all: 'Todos',
     edit: 'Editar', deleteEmployeeTitle: 'Eliminar empleado',
     employeeCreated: 'Empleado creado', employeeUpdated: 'Empleado actualizado', employeeDeleted: 'Empleado eliminado',
-    sessionExpired: 'Sesión expirada. Vuelve a iniciar sesión.'
+    sessionExpired: 'Sesión expirada. Vuelve a iniciar sesión.',
+    settings: 'Ajustes', profile: 'Perfil', account: 'Cuenta',
+    changePassword: 'Cambiar contraseña', currentPassword: 'Contraseña actual',
+    newPassword: 'Nueva contraseña', confirmPassword: 'Confirmar contraseña',
+    passwordChanged: 'Contraseña actualizada correctamente',
+    passwordMismatch: 'Las contraseñas no coinciden',
+    wrongCurrentPassword: 'La contraseña actual es incorrecta',
+    passwordTooShort: 'Debe tener al menos 6 caracteres',
+    preferences: 'Preferencias', appearance: 'Apariencia', language: 'Idioma',
+    dark: 'Oscuro', light: 'Claro', security: 'Seguridad',
+    notifications: 'Notificaciones', noNotifications: 'Sin notificaciones',
+    viewAllAlerts: 'Ver todas las alertas',
+    search: 'Buscar empleados…', searchResults: 'Resultados',
+    noSearchResults: 'Sin coincidencias'
   }
 }
 

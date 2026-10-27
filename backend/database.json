@@ -45,7 +45,7 @@
             "client_id": 1,
             "username": "alice",
             "email": "alice@abc.com",
-            "hashed_password": "$2b$12$qtzsvFpgV.nHHLzhLbXq2udQFNb5/oSRnxFyv10ghBxHf4nFb.qW.",
+            "hashed_password": "$2b$12$Cu3xSE/Q.xIQ5E8/lQN/E.rGrjiY.RLKwWTZm6iYWWJmECwC6CJpm",
             "role": "HR",
             "status": "active"
         },

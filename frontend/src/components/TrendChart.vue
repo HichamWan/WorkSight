@@ -37,21 +37,21 @@ function readPalette() {
   const styles = getComputedStyle(document.documentElement)
   const read = (name, fallback) => (styles.getPropertyValue(name) || fallback).trim()
   return {
-    accent: read('--accent', '#6FA84D'),
-    warning: read('--warning', '#B27A14'),
-    neutral: read('--border-strong', '#CFD3CB'),
-    text: read('--text-secondary', '#6B7280'),
-    grid: read('--border', 'rgba(163, 177, 198, 0.25)')
+    accent: read('--accent', '#2e7dff'),
+    warning: read('--warning', '#fbbf24'),
+    neutral: read('--border-strong', '#82aaff'),
+    text: read('--text-secondary', '#a9b8dc'),
+    grid: read('--border', 'rgba(120, 160, 255, 0.18)')
   }
 }
 
 function fallbackPalette() {
   return {
-    accent: '#6FA84D',
-    warning: '#B27A14',
-    neutral: '#CFD3CB',
-    text: '#6B7280',
-    grid: 'rgba(163, 177, 198, 0.25)'
+    accent: '#2e7dff',
+    warning: '#fbbf24',
+    neutral: '#82aaff',
+    text: '#a9b8dc',
+    grid: 'rgba(120, 160, 255, 0.18)'
   }
 }
 

@@ -2,8 +2,8 @@ import { ref } from 'vue'
 
 const THEME_KEY = 'worksight_theme'
 
-// Light mode is the default
-const theme = ref(localStorage.getItem(THEME_KEY) || 'light')
+// Dark (deep navy + electric blue) is the default, like the BizNext reference
+const theme = ref(localStorage.getItem(THEME_KEY) || 'dark')
 
 function applyTheme() {
   document.documentElement.dataset.theme = theme.value

@@ -85,6 +85,12 @@ export const api = {
 
   me: () => request('/hr/auth/me'),
 
+  changePassword: (currentPassword, newPassword) =>
+    request('/hr/auth/change-password', {
+      method: 'POST',
+      body: { current_password: currentPassword, new_password: newPassword }
+    }),
+
   // ---------- Dashboard ----------
   dashboardSummary: () => request('/hr/dashboard/summary'),
   dashboardToday: () => request('/hr/dashboard/today'),

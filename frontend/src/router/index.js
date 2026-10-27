@@ -10,6 +10,7 @@ import EmployeeDetailView from '../views/EmployeeDetailView.vue'
 import AttendanceView from '../views/AttendanceView.vue'
 import AlertsView from '../views/AlertsView.vue'
 import ReportsView from '../views/ReportsView.vue'
+import SettingsView from '../views/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,7 +25,8 @@ const router = createRouter({
         { path: 'employees/:id', name: 'employee-detail', component: EmployeeDetailView },
         { path: 'attendance', name: 'attendance', component: AttendanceView },
         { path: 'alerts', name: 'alerts', component: AlertsView, meta: { permission: 'viewAlerts' } },
-        { path: 'reports', name: 'reports', component: ReportsView, meta: { permission: 'viewReports' } }
+        { path: 'reports', name: 'reports', component: ReportsView, meta: { permission: 'viewReports' } },
+        { path: 'settings', name: 'settings', component: SettingsView }
       ]
     }
   ]
