@@ -1,0 +1,62 @@
+Collecting uvicorn
+  Using cached uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting fastapi
+  Using cached fastapi-0.142.2-py3-none-any.whl.metadata (27 kB)
+Collecting python-multipart
+  Using cached python_multipart-0.0.32-py3-none-any.whl.metadata (2.1 kB)
+Collecting pyjwt
+  Using cached pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+Collecting bcrypt
+  Using cached bcrypt-5.0.0-cp39-abi3-win_amd64.whl.metadata (10 kB)
+Requirement already satisfied: numpy in c:\users\noura\appdata\local\python\pythoncore-3.14-64\lib\site-packages (2.4.4)
+Requirement already satisfied: Pillow in c:\users\noura\appdata\local\python\pythoncore-3.14-64\lib\site-packages (12.2.0)
+Collecting click>=7.0 (from uvicorn)
+  Using cached click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Requirement already satisfied: h11>=0.8 in c:\users\noura\appdata\local\python\pythoncore-3.14-64\lib\site-packages (from uvicorn) (0.16.0)
+Collecting starlette>=0.46.0 (from fastapi)
+  Using cached starlette-1.7.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting pydantic>=2.9.0 (from fastapi)
+  Using cached pydantic-2.13.5-py3-none-any.whl.metadata (110 kB)
+Requirement already satisfied: typing-extensions>=4.8.0 in c:\users\noura\appdata\local\python\pythoncore-3.14-64\lib\site-packages (from fastapi) (4.15.0)
+Collecting typing-inspection>=0.4.2 (from fastapi)
+  Using cached typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+Collecting annotated-doc>=0.0.2 (from fastapi)
+  Using cached annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+Collecting opentelemetry-api>=1.44.0 (from fastapi)
+  Using cached opentelemetry_api-1.45.1-py3-none-any.whl.metadata (1.4 kB)
+Collecting annotated-types>=0.6.0 (from pydantic>=2.9.0->fastapi)
+  Using cached annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.46.5 (from pydantic>=2.9.0->fastapi)
+  Downloading pydantic_core-2.46.5-cp314-cp314-win_amd64.whl.metadata (6.7 kB)
+Collecting anyio<5,>=4.0.0 (from starlette>=0.46.0->fastapi)
+  Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+Requirement already satisfied: idna>=2.8 in c:\users\noura\appdata\local\python\pythoncore-3.14-64\lib\site-packages (from anyio<5,>=4.0.0->starlette>=0.46.0->fastapi) (3.15)
+WARNING: Cache entry deserialization failed, entry ignored
+Collecting typing-extensions>=4.8.0 (from fastapi)
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+Downloading fastapi-0.142.2-py3-none-any.whl (144 kB)
+Using cached python_multipart-0.0.32-py3-none-any.whl (30 kB)
+Using cached pyjwt-2.15.1-py3-none-any.whl (33 kB)
+Downloading bcrypt-5.0.0-cp39-abi3-win_amd64.whl (150 kB)
+Using cached annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+Downloading pydantic-2.13.5-py3-none-any.whl (472 kB)
+Downloading pydantic_core-2.46.5-cp314-cp314-win_amd64.whl (2.0 MB)
+   ---------------------------------------- 2.0/2.0 MB 16.0 kB/s  0:02:30
+Using cached annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Using cached starlette-1.7.0-py3-none-any.whl (78 kB)
+Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Installing collected packages: typing-extensions, python-multipart, pyjwt, click, bcrypt, annotated-types, annotated-doc, uvicorn, typing-inspection, pydantic-core, opentelemetry-api, anyio, starlette, pydantic, fastapi
+  Attempting uninstall: typing-extensions
+    Found existing installation: typing_extensions 4.15.0
+    Uninstalling typing_extensions-4.15.0:
+ERROR: Could not install packages due to an OSError: [WinError 2] The system cannot find the file specified
+
+
+
+[notice] A new release of pip is available: 25.3 -> 26.2.1
+[notice] To update, run: C:\Users\noura\AppData\Local\Python\pythoncore-3.14-64\python.exe -m pip install --upgrade pip

@@ -4,9 +4,9 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, date
 import io
-from app.auth.crypto import verify_password, create_access_token, generate_face_embedding, compare_face_embeddings
+from app.auth.crypto import verify_password, hash_password, create_access_token, generate_face_embedding, compare_face_embeddings
 from app.auth.dependencies import get_current_user, require_role
-from app.database import db_users, db_employees, db_attendance, db_face_embeddings, save_to_json
+from app.database import db_users, db_clients, db_employees, db_attendance, db_face_embeddings, save_to_json
 
 
 
@@ -18,6 +18,12 @@ router = APIRouter(prefix="/api", tags=["HR & Face AI Management"])
 class HRLoginReq(BaseModel):
     username: str
     password: str
+
+class HRRegisterReq(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    company_name: Optional[str] = None
 
 class EmployeeCreateReq(BaseModel):
     employee_code: str
@@ -52,6 +58,66 @@ def hr_login(payload: HRLoginReq):
     return {
         "success": True,
         "message": "Login successful",
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user["id"],
+            "client_id": user["client_id"],
+            "username": user["username"],
+            "email": user["email"],
+            "role": user["role"],
+            "status": user["status"]
+        }
+    }
+
+@router.post("/hr/auth/register")
+def hr_register(payload: HRRegisterReq):
+    """Creates a new client company workspace with an HR owner account."""
+    username = payload.username.strip()
+    if len(username) < 3:
+        raise HTTPException(status_code=422, detail="Username must be at least 3 characters")
+    if len(payload.password) < 6:
+        raise HTTPException(status_code=422, detail="Password must be at least 6 characters")
+
+    if any(u["username"].lower() == username.lower() for u in db_users):
+        raise HTTPException(status_code=409, detail="Username already taken")
+    if any(u["email"].lower() == payload.email.lower() for u in db_users):
+        raise HTTPException(status_code=409, detail="Email is already registered")
+
+    # Create a company workspace for the new account
+    new_client_id = max((c["id"] for c in db_clients), default=0) + 1
+    company_name = payload.company_name.strip() or f"{username}'s Company"
+    db_clients.append({
+        "id": new_client_id,
+        "company_name": company_name,
+        "company_code": f"C{new_client_id:03d}",
+        "status": "active",
+        "created_at": datetime.now().isoformat()
+    })
+
+    new_user_id = max((u["id"] for u in db_users), default=0) + 1
+    user = {
+        "id": new_user_id,
+        "client_id": new_client_id,
+        "username": username,
+        "email": payload.email,
+        "hashed_password": hash_password(payload.password),
+        "role": "HR",
+        "status": "active"
+    }
+    db_users.append(user)
+    save_to_json()
+
+    access_token = create_access_token(data={
+        "user_id": user["id"],
+        "username": user["username"],
+        "role": user["role"],
+        "client_id": user["client_id"]
+    })
+
+    return {
+        "success": True,
+        "message": "Account created successfully",
         "access_token": access_token,
         "token_type": "bearer",
         "user": {

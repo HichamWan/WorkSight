@@ -1,0 +1,333 @@
+/* ============================================================
+   WorkSight — Clean, Professional Design System
+   Light (default) + Dark (black + shiny red accent)
+   ============================================================ */
+
+/* -------- LIGHT (default) -------- */
+:root {
+  --bg:            #F6F6F7;
+  --surface:       #FFFFFF;
+  --surface-2:     #FAFAFB;
+  --surface-3:     #F0F0F2;
+  --border:        #E5E5E8;
+  --border-strong: #CFD0D5;
+
+  --text:       #191A1C;
+  --text-2:     #4B4D52;
+  --text-muted: #8A8D95;
+
+  --accent:        #E5342B;   /* shiny red */
+  --accent-strong: #C21F18;
+  --accent-soft:   rgba(229, 52, 43, 0.10);
+  --accent-border: rgba(229, 52, 43, 0.34);
+  /* Glossy gradient used for branding surfaces (logo, highlights) */
+  --accent-gradient: linear-gradient(135deg, #FF6A5A 0%, #E5342B 55%, #B8121B 100%);
+  --accent-glow:     rgba(229, 52, 43, 0.35);
+
+  --success: #2E9D6E; --success-soft: rgba(46, 157, 110, 0.10);
+  --warning: #B27A14; --warning-soft: rgba(178, 122, 20, 0.10);
+  --danger:  #8E1B2E; --danger-soft:  rgba(142, 27, 46, 0.10);
+
+  --hairline:    #E8E8EB;
+  --hairline-2:  #F0F0F2;
+  --row-hover:   rgba(229, 52, 43, 0.05);
+  --th-bg:       #F7F7F8;
+  --scrollbar:   rgba(120, 120, 130, 0.32);
+
+  --input-bg:       #FFFFFF;
+  --input-border:   #D8D9DE;
+  --input-focus:    #FFFFFF;
+  --input-ring:     rgba(229, 52, 43, 0.22);
+
+  --shadow-sm: 0 1px 2px rgba(20, 22, 26, 0.05);
+  --shadow:    0 1px 3px rgba(20, 22, 26, 0.06), 0 1px 2px rgba(20, 22, 26, 0.04);
+  --shadow-md: 0 4px 12px -4px rgba(20, 22, 26, 0.10);
+
+  --radius:     8px;
+  --radius-md:  10px;
+  --radius-lg:  12px;
+  --radius-pill: 999px;
+
+  --sidebar-width: 240px;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+
+/* -------- DARK (black + shiny red) -------- */
+html[data-theme='dark'] {
+  --bg:            #0F1012;
+  --surface:       #17181B;
+  --surface-2:     #1D1F23;
+  --surface-3:     #0C0D0F;
+  --border:        #2B2D32;
+  --border-strong: #3B3E45;
+
+  --text:       #EDEDF0;
+  --text-2:     rgba(237, 237, 240, 0.72);
+  --text-muted: rgba(237, 237, 240, 0.50);
+
+  --accent:        #FF4B45;
+  --accent-strong: #FF6B63;
+  --accent-soft:   rgba(255, 75, 69, 0.15);
+  --accent-border: rgba(255, 75, 69, 0.40);
+  --accent-gradient: linear-gradient(135deg, #FF7A70 0%, #FF4B45 55%, #D91F1A 100%);
+  --accent-glow:     rgba(255, 75, 69, 0.40);
+
+  --success: #5CC995; --success-soft: rgba(92, 201, 149, 0.14);
+  --warning: #E2B458; --warning-soft: rgba(226, 180, 88, 0.14);
+  --danger:  #FF6B7A; --danger-soft:  rgba(255, 107, 122, 0.14);
+
+  --hairline:   #2B2D32;
+  --hairline-2: #202226;
+  --row-hover:  rgba(255, 75, 69, 0.07);
+  --th-bg:      #141619;
+  --scrollbar:  rgba(255, 255, 255, 0.18);
+
+  --input-bg:     #1A1C20;
+  --input-border: #313440;
+  --input-focus:  #202226;
+  --input-ring:   rgba(255, 75, 69, 0.28);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow:    0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 18px -8px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+#app { min-height: 100vh; }
+
+/* No background blobs / iridescence — clean surface */
+.liquid-bg { display: none; }
+
+/* ============================================================
+   Surface (renamed from .glass, but kept for compatibility)
+   ============================================================ */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass--strong {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.glass--soft {
+  background: var(--surface-2);
+  border-color: var(--hairline);
+  box-shadow: none;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn--primary {
+  color: #fff;
+  /* Glossy highlight layered over the base accent */
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+  background-color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+.btn--primary:hover {
+  background-color: var(--accent-strong);
+  border-color: var(--accent-strong);
+  box-shadow: 0 2px 10px var(--accent-glow);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+  box-shadow: none;
+}
+.btn--ghost:hover { background: var(--surface-2); }
+
+.btn--danger {
+  color: #fff;
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn--sm { padding: 6px 12px; font-size: 0.8rem; }
+
+.btn--icon {
+  width: 36px; height: 36px;
+  padding: 0;
+  border-radius: var(--radius);
+}
+
+/* ============================================================
+   Inputs
+   ============================================================ */
+.input,
+.select {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.input::placeholder { color: var(--text-muted); }
+.input:hover, .select:hover { border-color: var(--border-strong); }
+
+.input:focus,
+.select:focus {
+  background: var(--input-focus);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--input-ring);
+}
+
+.select { appearance: none; cursor: pointer; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+.table-wrap { overflow-x: auto; border-radius: var(--radius-md); }
+.table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+.table th {
+  text-align: start;
+  padding: 11px 16px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--th-bg);
+}
+
+.table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--hairline-2);
+  color: var(--text-2);
+}
+.table tbody tr { transition: background 0.12s ease; }
+.table tbody tr:hover { background: var(--row-hover); }
+.table tbody tr:last-child td { border-bottom: none; }
+
+/* ============================================================
+   Status chips
+   ============================================================ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  background: var(--surface-2);
+}
+
+.chip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.chip--success { background: var(--success-soft); color: var(--success); border-color: transparent; }
+.chip--success::before { background: var(--success); }
+.chip--warning { background: var(--warning-soft); color: var(--warning); border-color: transparent; }
+.chip--warning::before { background: var(--warning); }
+.chip--danger  { background: var(--danger-soft);  color: var(--danger);  border-color: transparent; }
+.chip--danger::before  { background: var(--danger); }
+.chip--accent  { background: var(--accent-soft);  color: var(--accent-strong); border-color: transparent; }
+.chip--accent::before  { background: var(--accent); }
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+.page-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+.page-subtitle { font-size: 0.9rem; color: var(--text-2); }
+.muted { color: var(--text-muted) !important; }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger  { color: var(--danger); }
+.hidden { display: none !important; }
+
+/* Dashboard ring helpers */
+.ring-track { stroke: var(--hairline); }
+.ring-stop-a { stop-color: var(--accent); }
+.ring-stop-b { stop-color: var(--accent-strong); }
+.ring-value  { fill: var(--text); }
+.ring-label  { fill: var(--text-muted); }
+
+/* Brand gradient (used by avatars) — simple solid in both themes */
+:root { --brand-grad: var(--accent); }
+html[data-theme='dark'] { --brand-grad: var(--accent); }
