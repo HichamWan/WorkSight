@@ -11,6 +11,8 @@ import AttendanceView from '../views/AttendanceView.vue'
 import AlertsView from '../views/AlertsView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import FaceIdView from '../views/FaceIdView.vue'
+import DepartmentsView from '../views/DepartmentsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,6 +28,8 @@ const router = createRouter({
         { path: 'attendance', name: 'attendance', component: AttendanceView },
         { path: 'alerts', name: 'alerts', component: AlertsView, meta: { permission: 'viewAlerts' } },
         { path: 'reports', name: 'reports', component: ReportsView, meta: { permission: 'viewReports' } },
+        { path: 'departments', name: 'departments', component: DepartmentsView },
+        { path: 'face', name: 'face-id', component: FaceIdView, meta: { permission: 'recordAttendance' } },
         { path: 'settings', name: 'settings', component: SettingsView }
       ]
     }

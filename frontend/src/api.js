@@ -117,6 +117,23 @@ export const api = {
   alertsUndertime: () => request('/hr/alerts/under-time'),
   alertsLate: () => request('/hr/alerts/late'),
 
+  // ---------- Face AI ----------
+  registerFace: (employeeId, file) => {
+    const form = new FormData()
+    form.append('image', file)
+    return request('/face/register', {
+      method: 'POST',
+      params: { employee_id: employeeId },
+      formData: form
+    })
+  },
+
+  verifyFace: (file) => {
+    const form = new FormData()
+    form.append('image', file)
+    return request('/face/verify', { method: 'POST', formData: form })
+  },
+
   // ---------- Reports ----------
   reportAttendance: (params) => request('/hr/reports/attendance', { params }),
   reportWorkHours: (params) => request('/hr/reports/work-hours', { params }),

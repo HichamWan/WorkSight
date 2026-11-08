@@ -20,6 +20,11 @@
             <span class="chip">{{ employee.status || 'active' }}</span>
           </div>
         </div>
+        <div class="hero__actions">
+          <button v-if="canEdit" class="btn btn--primary btn--sm" @click="goToFace">
+            {{ employee.face_registered ? t('faceId') : t('enrollFace') }}
+          </button>
+        </div>
       </section>
 
       <section class="glass info-card">
@@ -92,6 +97,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { api } from '../api'
 import { useTable } from '../table'
 import { useI18n } from '../i18n'
+import { useAuth } from '../auth'
+import { can } from '../roles'
 import Pager from '../components/Pager.vue'
 
 const { t } = useI18n()
@@ -144,6 +151,12 @@ function formatTime(value) {
 
 function formatStatus(status) {
   return (status || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+const canEdit = computed(() => can('recordAttendance', user.value))
+
+function goToFace() {
+  router.push({ name: 'face-id', query: { employee: employee.value.id } })
 }
 
 function goBack() {
@@ -209,6 +222,13 @@ onMounted(async () => {
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+}
+
+.hero__actions {
+  margin-inline-start: auto;
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .hero__name {

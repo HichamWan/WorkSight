@@ -1,36 +1,10 @@
 [DATABASE INFO] Successfully loaded persisted states from local file schema.
-INFO:     Started server process [28780]
+INFO:     Started server process [9296]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:52470 - "GET /api/health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52474 - "GET /api/health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64398 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64398 - "POST /api/hr/auth/change-password HTTP/1.1" 400 Bad Request
-INFO:     127.0.0.1:64398 - "POST /api/hr/auth/change-password HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64406 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64406 - "POST /api/hr/auth/change-password HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51524 - "GET /api/hr/employees HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51524 - "GET /api/hr/dashboard/summary HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62822 - "GET /api/hr/dashboard/analytics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51299 - "GET /api/hr/dashboard/today HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62822 - "GET /api/hr/dashboard/summary HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51524 - "GET /api/hr/dashboard/today HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51299 - "GET /api/hr/alerts HTTP/1.1" 200 OK
-INFO:     127.0.0.1:56079 - "GET /api/hr/dashboard/analytics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50521 - "GET /api/hr/alerts HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53518 - "GET /api/hr/dashboard/summary HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53518 - "GET /api/hr/dashboard/analytics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50521 - "GET /api/hr/dashboard/today HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52250 - "OPTIONS /api/hr/employees HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52250 - "GET /api/hr/employees HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52250 - "OPTIONS /api/hr/attendance HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50354 - "GET /api/hr/employees HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52250 - "GET /api/hr/attendance HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52250 - "GET /api/hr/employees HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52250 - "OPTIONS /api/hr/dashboard/summary HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50354 - "OPTIONS /api/hr/dashboard/today HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54321 - "OPTIONS /api/hr/dashboard/analytics HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50354 - "GET /api/hr/dashboard/today HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52250 - "GET /api/hr/dashboard/summary HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54321 - "GET /api/hr/dashboard/analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59821 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62696 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62696 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62696 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62696 - "GET /api/hr/attendance HTTP/1.1" 200 OK

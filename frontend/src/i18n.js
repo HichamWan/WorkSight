@@ -95,7 +95,21 @@ const messages = {
     viewAllAlerts: 'View all alerts',
     // global search
     search: 'Search employees, actions…', searchResults: 'Results',
-    noSearchResults: 'No matches found'
+    noSearchResults: 'No matches found',
+    // face id
+    faceId: 'Face ID', enrollFace: 'Enroll face', enrollHint: 'Capture a clear, front-facing photo to register the employee\'s face.',
+    scanFace: 'Scan face', faceKiosk: 'Verification kiosk', kioskHint: 'Point the camera at an employee — we identify them and record attendance.',
+    scanResult: 'Scan result', noScanYet: 'No scan yet — start the camera and scan a face.',
+    matchConfidence: 'Confidence', noMatch: 'No match found', tryAgain: 'Try again',
+    faceEnrolled: 'Face enrolled successfully', processing: 'Processing…',
+    startCamera: 'Start camera', cameraOff: 'Camera is off', cameraDenied: 'Camera permission denied',
+    cameraUnavailable: 'No camera available', enrollmentStatus: 'Enrollment status',
+    employeesEnrolled: 'employees enrolled', captureEnroll: 'Capture & enroll',
+    // departments
+    departments: 'Departments', departmentBreakdown: 'Department breakdown',
+    headcount: 'Headcount', members: 'members', avgHours: 'Avg hours',
+    attendanceRate: 'Attendance rate', noDepartments: 'No departments found.',
+    loadingDepartments: 'Loading departments…', unassigned: 'Unassigned'
   },
   zh: {
     appName: 'WorkSight',
@@ -165,7 +179,19 @@ const messages = {
     notifications: '通知', noNotifications: '暂无通知',
     viewAllAlerts: '查看全部预警',
     search: '搜索员工、功能…', searchResults: '搜索结果',
-    noSearchResults: '未找到匹配项'
+    noSearchResults: '未找到匹配项',
+    faceId: '人脸识别', enrollFace: '录入人脸', enrollHint: '拍摄清晰的正脸照片以录入员工人脸。',
+    scanFace: '扫描人脸', faceKiosk: '验证终端', kioskHint: '将摄像头对准员工 — 系统将识别身份并记录考勤。',
+    scanResult: '扫描结果', noScanYet: '尚未扫描 — 请开启摄像头并扫描人脸。',
+    matchConfidence: '匹配度', noMatch: '未找到匹配', tryAgain: '请重试',
+    faceEnrolled: '人脸录入成功', processing: '处理中…',
+    startCamera: '开启摄像头', cameraOff: '摄像头未开启', cameraDenied: '摄像头权限被拒绝',
+    cameraUnavailable: '无可用摄像头', enrollmentStatus: '录入状态',
+    employeesEnrolled: '名员工已录入', captureEnroll: '拍照并录入',
+    departments: '部门', departmentBreakdown: '部门明细',
+    headcount: '人数', members: '人', avgHours: '平均工时',
+    attendanceRate: '出勤率', noDepartments: '未找到部门。',
+    loadingDepartments: '正在加载部门…', unassigned: '未分配'
   },
   ar: {
     appName: 'WorkSight',
@@ -235,7 +261,19 @@ const messages = {
     notifications: 'الإشعارات', noNotifications: 'لا توجد إشعارات',
     viewAllAlerts: 'عرض كل التنبيهات',
     search: 'ابحث عن موظفين…', searchResults: 'النتائج',
-    noSearchResults: 'لا توجد نتائج'
+    noSearchResults: 'لا توجد نتائج',
+    faceId: 'بصمة الوجه', enrollFace: 'تسجيل الوجه', enrollHint: 'التقط صورة واضحة للوجه الأمامي لتسجيل وجه الموظف.',
+    scanFace: 'مسح الوجه', faceKiosk: 'نقطة التحقق', kioskHint: 'وجّه الكاميرا نحو الموظف — سنتعرف عليه ونسجل الحضور.',
+    scanResult: 'نتيجة المسح', noScanYet: 'لم يتم المسح بعد — شغّل الكاميرا وامسح الوجه.',
+    matchConfidence: 'نسبة التطابق', noMatch: 'لا يوجد تطابق', tryAgain: 'أعد المحاولة',
+    faceEnrolled: 'تم تسجيل الوجه بنجاح', processing: 'جارٍ المعالجة…',
+    startCamera: 'تشغيل الكاميرا', cameraOff: 'الكاميرا مغلقة', cameraDenied: 'تم رفض إذن الكاميرا',
+    cameraUnavailable: 'لا توجد كاميرا متاحة', enrollmentStatus: 'حالة التسجيل',
+    employeesEnrolled: 'موظف مسجل', captureEnroll: 'التقاط وتسجيل',
+    departments: 'الأقسام', departmentBreakdown: 'تفصيل الأقسام',
+    headcount: 'عدد الموظفين', members: 'عضو', avgHours: 'متوسط الساعات',
+    attendanceRate: 'نسبة الحضور', noDepartments: 'لا توجد أقسام.',
+    loadingDepartments: 'جارٍ تحميل الأقسام…', unassigned: 'غير محدد'
   },
   fr: {
     appName: 'WorkSight',
@@ -305,7 +343,19 @@ const messages = {
     notifications: 'Notifications', noNotifications: 'Aucune notification',
     viewAllAlerts: 'Voir toutes les alertes',
     search: 'Rechercher des employés…', searchResults: 'Résultats',
-    noSearchResults: 'Aucun résultat'
+    noSearchResults: 'Aucun résultat',
+    faceId: 'Reconnaissance faciale', enrollFace: 'Enregistrer le visage', enrollHint: 'Capturez une photo nette de face pour enregistrer le visage.',
+    scanFace: 'Scanner le visage', faceKiosk: 'Borne de vérification', kioskHint: 'Visez l’employé avec la caméra — identification et pointage automatiques.',
+    scanResult: 'Résultat du scan', noScanYet: 'Aucun scan — démarrez la caméra et scannez un visage.',
+    matchConfidence: 'Confiance', noMatch: 'Aucune correspondance', tryAgain: 'Réessayer',
+    faceEnrolled: 'Visage enregistré', processing: 'Traitement…',
+    startCamera: 'Démarrer la caméra', cameraOff: 'Caméra éteinte', cameraDenied: 'Permission caméra refusée',
+    cameraUnavailable: 'Aucune caméra disponible', enrollmentStatus: 'État des enregistrements',
+    employeesEnrolled: 'employés enregistrés', captureEnroll: 'Capturer et enregistrer',
+    departments: 'Départements', departmentBreakdown: 'Répartition par département',
+    headcount: 'Effectif', members: 'membres', avgHours: 'Heures moy.',
+    attendanceRate: 'Taux de présence', noDepartments: 'Aucun département trouvé.',
+    loadingDepartments: 'Chargement des départements…', unassigned: 'Non affecté'
   },
   es: {
     appName: 'WorkSight',
@@ -375,7 +425,19 @@ const messages = {
     notifications: 'Notificaciones', noNotifications: 'Sin notificaciones',
     viewAllAlerts: 'Ver todas las alertas',
     search: 'Buscar empleados…', searchResults: 'Resultados',
-    noSearchResults: 'Sin coincidencias'
+    noSearchResults: 'Sin coincidencias',
+    faceId: 'Reconocimiento facial', enrollFace: 'Registrar rostro', enrollHint: 'Captura una foto frontal nítida para registrar el rostro.',
+    scanFace: 'Escanear rostro', faceKiosk: 'Kiosco de verificación', kioskHint: 'Apunta la cámara al empleado — lo identificamos y registramos la asistencia.',
+    scanResult: 'Resultado del escaneo', noScanYet: 'Sin escaneo — inicia la cámara y escanea un rostro.',
+    matchConfidence: 'Confianza', noMatch: 'Sin coincidencias', tryAgain: 'Inténtalo de nuevo',
+    faceEnrolled: 'Rostro registrado correctamente', processing: 'Procesando…',
+    startCamera: 'Iniciar cámara', cameraOff: 'Cámara apagada', cameraDenied: 'Permiso de cámara denegado',
+    cameraUnavailable: 'No hay cámara disponible', enrollmentStatus: 'Estado del registro',
+    employeesEnrolled: 'empleados registrados', captureEnroll: 'Capturar y registrar',
+    departments: 'Departamentos', departmentBreakdown: 'Desglose por departamento',
+    headcount: 'Plantilla', members: 'miembros', avgHours: 'Horas prom.',
+    attendanceRate: 'Tasa de asistencia', noDepartments: 'No se encontraron departamentos.',
+    loadingDepartments: 'Cargando departamentos…', unassigned: 'Sin asignar'
   }
 }
 
