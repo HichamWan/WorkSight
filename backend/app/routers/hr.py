@@ -6,7 +6,7 @@ from datetime import datetime, date
 import io
 from app.auth.crypto import verify_password, hash_password, create_access_token, generate_face_embedding, compare_face_embeddings
 from app.auth.dependencies import get_current_user, require_role
-from app.database import db_users, db_clients, db_employees, db_attendance, db_face_embeddings, save_to_json
+from app.database import db_users, db_clients, db_employees, db_attendance, db_leaves, db_activity, db_face_embeddings, save_to_json
 
 
 
@@ -41,6 +41,15 @@ class CheckInReq(BaseModel):
 class ChangePasswordReq(BaseModel):
     current_password: str
     new_password: str
+
+class LeaveCreateReq(BaseModel):
+    employee_id: int
+    start_date: date
+    end_date: date
+    reason: str
+
+class LeaveStatusReq(BaseModel):
+    status: str
 
 # ==========================================
 # 7. HR AUTHENTICATION
@@ -168,6 +177,29 @@ def hr_me(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE
 # ==========================================
 # 8. EMPLOYEES (Scoped by client_id)
 # ==========================================
+def _log_activity(current_user: dict, action: str, detail: str):
+    """Append an entry to the tenant-scoped audit trail (kept to the last 200 per tenant)."""
+    db_activity.append({
+        "id": max((a["id"] for a in db_activity), default=9000) + 1,
+        "client_id": current_user["client_id"],
+        "username": current_user.get("username", "system"),
+        "action": action,
+        "detail": detail,
+        "created_at": datetime.now().isoformat()
+    })
+    tenant = current_user["client_id"]
+    tenant_logs = [a for a in db_activity if a["client_id"] == tenant]
+    if len(tenant_logs) > 200:
+        cutoff = tenant_logs[0]["id"]
+        db_activity[:] = [a for a in db_activity if a["id"] > cutoff]
+
+@router.get("/hr/activity")
+def get_activity(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+    tenant_id = current_user["client_id"]
+    scoped = [a for a in db_activity if a["client_id"] == tenant_id]
+    scoped.sort(key=lambda a: a["created_at"], reverse=True)
+    return {"activity": scoped[:50], "total": len(scoped)}
+
 @router.get("/hr/employees")
 def get_employees(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
     tenant_id = current_user["client_id"]
@@ -193,6 +225,7 @@ def create_employee(payload: EmployeeCreateReq, current_user: dict = Depends(req
         "created_at": datetime.now().isoformat()
     }
     db_employees.append(new_emp)
+    _log_activity(current_user, "employee_created", f"{payload.first_name} {payload.last_name} ({payload.employee_code})")
     save_to_json()
     return {"success": True, "employee": new_emp}
 
@@ -212,6 +245,8 @@ def update_employee(employee_id: int, payload: EmployeeCreateReq, current_user: 
         raise HTTPException(status_code=404, detail="Employee profile not found in your company")
     
     emp |= payload.model_dump()
+    _log_activity(current_user, "employee_updated", f"{payload.first_name} {payload.last_name} ({payload.employee_code})")
+    save_to_json()
     return {"success": True, "employee": emp}
 
 @router.delete("/hr/employees/{employee_id}")
@@ -223,6 +258,8 @@ def delete_employee(employee_id: int, current_user: dict = Depends(require_role(
         raise HTTPException(status_code=404, detail="Employee profile not found in your company")
         
     db_employees.remove(emp)
+    _log_activity(current_user, "employee_deleted", f"{emp['first_name']} {emp['last_name']} ({emp['employee_code']})")
+    save_to_json()
     return {"success": True, "message": "Employee profile deleted permanently"}
 
 # ==========================================
@@ -245,6 +282,7 @@ def check_in(payload: CheckInReq, current_user: dict = Depends(get_current_user)
         "undertime_hours": 0
     }
     db_attendance.append(new_record)
+    _log_activity(current_user, "check_in", f"{payload.employee_id} at {payload.timestamp.strftime('%H:%M')}")
     return {"success": True, "attendance": new_record}
 
 @router.post("/hr/attendance/check-out")
@@ -399,6 +437,7 @@ async def face_register(
     # Store the 128 numbers securely inside our database module linked to their profile
     db_face_embeddings[str(employee_id)] = embedding
     emp["face_registered"] = True  # Toggle status flag update
+    _log_activity(current_user, "face_enrolled", f"{emp['first_name']} {emp['last_name']} ({emp['employee_code']})")
     save_to_json()
 
     return {
@@ -454,7 +493,65 @@ async def face_verify(
 
 
 # ==========================================
-# 14. REPORTS
+# 14. LEAVE REQUESTS
+# ==========================================
+def _leave_out(leave):
+    emp = next((e for e in db_employees if e["id"] == leave["employee_id"]), None)
+    return {
+        **leave,
+        "employee_name": f"{emp['first_name']} {emp['last_name']}" if emp else "Unknown",
+        "employee_code": emp["employee_code"] if emp else None,
+        "department": emp["department"] if emp else None
+    }
+
+@router.get("/hr/leaves")
+def get_leaves(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+    tenant_id = current_user["client_id"]
+    scoped = [l for l in db_leaves if l["client_id"] == tenant_id]
+    scoped.sort(key=lambda l: l.get("created_at") or "", reverse=True)
+    return {"leaves": [_leave_out(l) for l in scoped], "total": len(scoped)}
+
+@router.post("/hr/leaves")
+def create_leave(payload: LeaveCreateReq, current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+    tenant_id = current_user["client_id"]
+    emp = next((e for e in db_employees if e["id"] == payload.employee_id and e["client_id"] == tenant_id), None)
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee profile not found in your company")
+    if payload.end_date < payload.start_date:
+        raise HTTPException(status_code=422, detail="End date cannot be before start date")
+
+    leave = {
+        "id": max((l["id"] for l in db_leaves), default=5000) + 1,
+        "client_id": tenant_id,
+        "employee_id": payload.employee_id,
+        "start_date": payload.start_date.isoformat(),
+        "end_date": payload.end_date.isoformat(),
+        "reason": payload.reason.strip(),
+        "status": "pending",
+        "created_at": datetime.now().isoformat()
+    }
+    db_leaves.append(leave)
+    _log_activity(current_user, "leave_requested", f"{_leave_out(leave)['employee_name']} · {payload.start_date} → {payload.end_date}")
+    save_to_json()
+    return {"success": True, "leave": _leave_out(leave)}
+
+@router.post("/hr/leaves/{leave_id}/status")
+def set_leave_status(leave_id: int, payload: LeaveStatusReq, current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
+    tenant_id = current_user["client_id"]
+    leave = next((l for l in db_leaves if l["id"] == leave_id and l["client_id"] == tenant_id), None)
+    if not leave:
+        raise HTTPException(status_code=404, detail="Leave request not found")
+    status = payload.status.lower()
+    if status not in ("approved", "rejected", "pending"):
+        raise HTTPException(status_code=422, detail="Status must be approved, rejected or pending")
+    leave["status"] = status
+    _log_activity(current_user, f"leave_{status}", f"{_leave_out(leave)['employee_name']} · {leave['start_date']} → {leave['end_date']}")
+    save_to_json()
+    return {"success": True, "leave": _leave_out(leave)}
+
+
+# ==========================================
+# 15. REPORTS
 # ==========================================
 @router.get("/hr/reports/attendance")
 def report_attendance(current_user: dict = Depends(require_role(["HR", "MANAGER"]))):

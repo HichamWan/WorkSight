@@ -8,6 +8,7 @@ export const PERMISSIONS = {
   viewAttendance: ['HR', 'MANAGER', 'EXECUTIVE'],
   viewAlerts: ['HR', 'MANAGER'],
   viewReports: ['HR', 'MANAGER'],
+  viewLeaves: ['HR', 'MANAGER'],
   createEmployee: ['HR', 'MANAGER'],
   updateEmployee: ['HR', 'MANAGER'],
   deleteEmployee: ['HR'],

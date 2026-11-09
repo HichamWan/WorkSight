@@ -132,13 +132,14 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '../auth'
 import { useI18n } from '../i18n'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 import ThemeToggle from '../components/ThemeToggle.vue'
 
 const router = useRouter()
+const route = useRoute()
 const { login, register, loading } = useAuth()
 const { t } = useI18n()
 
@@ -153,11 +154,18 @@ function switchMode(toRegister) {
   error.value = ''
 }
 
+// After a session expiry the user is sent to /login?next=/path — honour it.
+function redirectAfterAuth() {
+  const next = route.query.next
+  const target = typeof next === 'string' && next.startsWith('/') ? next : null
+  router.push(target || { name: 'dashboard' })
+}
+
 async function submitLogin() {
   error.value = ''
   try {
     await login(loginForm.username.trim(), loginForm.password)
-    router.push({ name: 'dashboard' })
+    redirectAfterAuth()
   } catch (e) {
     error.value = e.message || t('loginFailed')
   }
@@ -172,7 +180,7 @@ async function submitRegister() {
       password: registerForm.password,
       company_name: registerForm.company_name.trim() || null
     })
-    router.push({ name: 'dashboard' })
+    redirectAfterAuth()
   } catch (e) {
     error.value = e.message || t('registerFailed')
   }

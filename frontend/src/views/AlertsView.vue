@@ -2,9 +2,9 @@
   <div class="alerts">
     <section class="glass table-card">
       <div class="table-card__head">
-        <h2 class="panel__title">{{ activeLabel }} alerts</h2>
+        <h2 class="panel__title">{{ activeLabel }} {{ t('alerts') }}</h2>
         <span class="chip" :class="alerts.length ? 'chip--warning' : 'chip--success'">
-          {{ alerts.length }} total
+          {{ alerts.length }} {{ t('total') }}
         </span>
       </div>
 
@@ -23,8 +23,8 @@
 
       <p v-if="error" class="banner banner--error">{{ error }}</p>
 
-      <div v-if="loading" class="empty muted">Loading alerts…</div>
-      <div v-else-if="alerts.length === 0" class="empty muted">No alerts — everything looks good.</div>
+      <div v-if="loading" class="empty muted">{{ t('loadingAlerts') }}</div>
+      <div v-else-if="alerts.length === 0" class="empty muted">{{ t('noAlerts') }}</div>
       <ul v-else class="alert-list">
         <li v-for="alert in alerts" :key="alert.id" class="alert-item glass--soft">
           <div class="alert-item__icon" :class="toneClass(alert.type)" v-html="icon"></div>

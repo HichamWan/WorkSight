@@ -50,13 +50,13 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th class="sortable" @click="toggleSort('date')">Date {{ arrow('date') }}</th>
-                  <th>Check in</th>
-                  <th>Check out</th>
-                  <th class="sortable" @click="toggleSort('worked_hours')">Worked {{ arrow('worked_hours') }}</th>
-                  <th>Overtime</th>
-                  <th>Undertime</th>
-                  <th class="sortable" @click="toggleSort('status')">Status {{ arrow('status') }}</th>
+                  <th class="sortable" @click="toggleSort('date')">{{ t('date') }} {{ arrow('date') }}</th>
+                  <th>{{ t('checkIn') }}</th>
+                  <th>{{ t('checkOut') }}</th>
+                  <th class="sortable" @click="toggleSort('worked_hours')">{{ t('worked') }} {{ arrow('worked_hours') }}</th>
+                  <th>{{ t('overtime') }}</th>
+                  <th>{{ t('undertime') }}</th>
+                  <th class="sortable" @click="toggleSort('status')">{{ t('status') }} {{ arrow('status') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -87,7 +87,7 @@
       </section>
     </template>
 
-    <section v-else class="glass empty muted">Employee not found.</section>
+    <section v-else class="glass empty muted">{{ t('employeeNotFound') }}</section>
   </div>
 </template>
 

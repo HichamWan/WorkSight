@@ -134,6 +134,15 @@ export const api = {
     return request('/face/verify', { method: 'POST', formData: form })
   },
 
+  // ---------- Activity ----------
+  activity: () => request('/hr/activity'),
+
+  // ---------- Leave requests ----------
+  leaves: () => request('/hr/leaves'),
+  createLeave: (payload) => request('/hr/leaves', { method: 'POST', body: payload }),
+  setLeaveStatus: (id, status) =>
+    request(`/hr/leaves/${id}/status`, { method: 'POST', body: { status } }),
+
   // ---------- Reports ----------
   reportAttendance: (params) => request('/hr/reports/attendance', { params }),
   reportWorkHours: (params) => request('/hr/reports/work-hours', { params }),

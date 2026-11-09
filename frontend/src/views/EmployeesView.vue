@@ -1,25 +1,28 @@
 <template>
   <div class="employees">
     <section class="glass toolbar">
-      <input v-model="query" class="input toolbar__search" type="text" placeholder="Search employees…" />
+      <input v-model="query" class="input toolbar__search" type="text" :placeholder="t('searchEmployees')" />
       <div class="toolbar__spacer"></div>
+      <button class="btn btn--ghost" :disabled="loading" @click="exportCsv">{{ t('exportCsv') }}</button>
+      <button v-if="canCreate" class="btn btn--ghost" @click="fileInput?.click()">{{ t('importCsv') }}</button>
+      <input ref="fileInput" type="file" accept=".csv,text/csv" class="hidden" @change="importCsv" />
       <button v-if="canCreate" class="btn btn--primary" @click="openModal()">+ {{ t('addEmployee') }}</button>
     </section>
 
     <section class="glass table-card">
-      <div v-if="loading" class="empty muted">Loading employees…</div>
-      <div v-else-if="filtered.length === 0" class="empty muted">No employees found.</div>
+      <div v-if="loading" class="empty muted">{{ t('loadingEmployees') }}</div>
+      <div v-else-if="filtered.length === 0" class="empty muted">{{ t('noEmployees') }}</div>
       <template v-else>
         <div class="table-wrap">
           <table class="table">
             <thead>
               <tr>
-                <th class="sortable" @click="toggleSort('first_name')">Employee {{ arrow('first_name') }}</th>
-                <th class="sortable" @click="toggleSort('employee_code')">Code {{ arrow('employee_code') }}</th>
-                <th class="sortable" @click="toggleSort('department')">Department {{ arrow('department') }}</th>
-                <th class="sortable" @click="toggleSort('position')">Position {{ arrow('position') }}</th>
-                <th>Contact</th>
-                <th>Face ID</th>
+                <th class="sortable" @click="toggleSort('first_name')">{{ t('employee') }} {{ arrow('first_name') }}</th>
+                <th class="sortable" @click="toggleSort('employee_code')">{{ t('code') }} {{ arrow('employee_code') }}</th>
+                <th class="sortable" @click="toggleSort('department')">{{ t('department') }} {{ arrow('department') }}</th>
+                <th class="sortable" @click="toggleSort('position')">{{ t('position') }} {{ arrow('position') }}</th>
+                <th>{{ t('contact') }}</th>
+                <th>{{ t('faceId') }}</th>
                 <th></th>
               </tr>
             </thead>
@@ -42,7 +45,7 @@
                 <td>{{ emp.phone }}</td>
                 <td>
                   <span class="chip" :class="emp.face_registered ? 'chip--success' : ''">
-                    {{ emp.face_registered ? 'Registered' : 'Not set' }}
+                    {{ emp.face_registered ? t('registered') : t('notSet') }}
                   </span>
                 </td>
                 <td>
@@ -70,38 +73,38 @@
     <!-- Add / edit employee modal -->
     <div v-if="showModal" class="modal-backdrop" @click.self="closeModal">
       <div class="modal glass glass--strong">
-        <h2 class="modal__title">{{ editing ? 'Edit employee' : 'Add employee' }}</h2>
+        <h2 class="modal__title">{{ editing ? t('edit') + ' ' + t('employee') : t('addEmployeeTitle') }}</h2>
         <form class="modal__form" @submit.prevent="save">
           <div class="field">
-            <label class="field__label">Employee code</label>
+            <label class="field__label">{{ t('employeeCode') }}</label>
             <input v-model="form.employee_code" class="input" required placeholder="e.g. EMP-107" />
           </div>
           <div class="field-row">
             <div class="field">
-              <label class="field__label">First name</label>
+              <label class="field__label">{{ t('firstName') }}</label>
               <input v-model="form.first_name" class="input" required />
             </div>
             <div class="field">
-              <label class="field__label">Last name</label>
+              <label class="field__label">{{ t('lastName') }}</label>
               <input v-model="form.last_name" class="input" required />
             </div>
           </div>
           <div class="field">
-            <label class="field__label">Email</label>
+            <label class="field__label">{{ t('email') }}</label>
             <input v-model="form.email" class="input" type="email" required placeholder="name@company.com" />
           </div>
           <div class="field-row">
             <div class="field">
-              <label class="field__label">Phone</label>
+              <label class="field__label">{{ t('phone') }}</label>
               <input v-model="form.phone" class="input" required />
             </div>
             <div class="field">
-              <label class="field__label">Department</label>
+              <label class="field__label">{{ t('department') }}</label>
               <input v-model="form.department" class="input" required />
             </div>
           </div>
           <div class="field">
-            <label class="field__label">Position</label>
+            <label class="field__label">{{ t('position') }}</label>
             <input v-model="form.position" class="input" required />
           </div>
 
@@ -179,6 +182,67 @@ function arrow(key) {
 
 function initials(emp) {
   return `${emp.first_name?.[0] ?? ''}${emp.last_name?.[0] ?? ''}`.toUpperCase()
+}
+
+const fileInput = ref(null)
+const importing = ref(false)
+
+const CSV_FIELDS = ['employee_code', 'first_name', 'last_name', 'email', 'phone', 'department', 'position']
+
+function exportCsv() {
+  const rows = [CSV_FIELDS, ...filtered.value.map((e) => CSV_FIELDS.map((f) => e[f] ?? ''))]
+  const csv = rows
+    .map((row) => row.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(','))
+    .join('\n')
+  const url = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `worksight-employees-${new Date().toISOString().slice(0, 10)}.csv`
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+function parseCsv(text) {
+  return text
+    .replace(/^\ufeff/, '')
+    .split(/\r?\n/)
+    .filter((line) => line.trim())
+    .map((line) => line.match(/("([^"]|"")*"|[^,]*)(,|$)/g)?.map((cell) => cell.replace(/,$/, '').replace(/^"|"$/g, '').replaceAll('""', '"')) || [])
+}
+
+async function importCsv(event) {
+  const file = event.target.files?.[0]
+  event.target.value = ''
+  if (!file) return
+  const text = await file.text()
+  const rows = parseCsv(text)
+  if (rows.length < 2) {
+    notify(t('importFailed'), 'error')
+    return
+  }
+  const header = rows[0].map((h) => h.trim().toLowerCase())
+  const idx = Object.fromEntries(CSV_FIELDS.map((f) => [f, header.indexOf(f)]))
+  const records = rows.slice(1).map((cells) =>
+    Object.fromEntries(CSV_FIELDS.map((f) => [f, (cells[idx[f]] ?? '').trim()]))
+  )
+  importing.value = true
+  let ok = 0
+  let failed = 0
+  for (const rec of records) {
+    if (!rec.employee_code || !rec.first_name) {
+      failed += 1
+      continue
+    }
+    try {
+      await api.createEmployee(rec)
+      ok += 1
+    } catch {
+      failed += 1
+    }
+  }
+  importing.value = false
+  await load()
+  notify(t('importDone', { ok, failed }), ok ? 'success' : 'error')
 }
 
 function openModal(emp = null) {

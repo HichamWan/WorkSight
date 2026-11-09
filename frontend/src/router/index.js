@@ -13,6 +13,7 @@ import ReportsView from '../views/ReportsView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import FaceIdView from '../views/FaceIdView.vue'
 import DepartmentsView from '../views/DepartmentsView.vue'
+import LeaveView from '../views/LeaveView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,6 +28,7 @@ const router = createRouter({
         { path: 'employees/:id', name: 'employee-detail', component: EmployeeDetailView },
         { path: 'attendance', name: 'attendance', component: AttendanceView },
         { path: 'alerts', name: 'alerts', component: AlertsView, meta: { permission: 'viewAlerts' } },
+        { path: 'leaves', name: 'leaves', component: LeaveView, meta: { permission: 'viewLeaves' } },
         { path: 'reports', name: 'reports', component: ReportsView, meta: { permission: 'viewReports' } },
         { path: 'departments', name: 'departments', component: DepartmentsView },
         { path: 'face', name: 'face-id', component: FaceIdView, meta: { permission: 'recordAttendance' } },

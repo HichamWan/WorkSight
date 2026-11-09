@@ -12,6 +12,7 @@
       <div class="toolbar__spacer"></div>
 
       <div class="toolbar__group toolbar__group--actions">
+        <button class="btn btn--ghost" :disabled="loading" @click="printReport">🖨 {{ t('print') }}</button>
         <button class="btn btn--ghost" :disabled="loading || exporting" @click="exportReport('csv')">
           {{ exporting && exportFormat === 'csv' ? t('saving') : t('exportCsv') }}
         </button>
@@ -88,6 +89,10 @@ async function load() {
   } finally {
     loading.value = false
   }
+}
+
+function printReport() {
+  window.print()
 }
 
 async function exportReport(format) {

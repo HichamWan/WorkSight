@@ -49,8 +49,8 @@
               <tr>
                 <th class="sortable" @click="toggleSort('employee_name')">Employee {{ arrow('employee_name') }}</th>
                 <th class="sortable" @click="toggleSort('date')">Date {{ arrow('date') }}</th>
-                <th>Check in</th>
-                <th>Check out</th>
+                <th>{{ t('checkIn') }}</th>
+                <th>{{ t('checkOut') }}</th>
                 <th class="sortable" @click="toggleSort('worked_hours')">Worked {{ arrow('worked_hours') }}</th>
                 <th>Overtime</th>
                 <th>Undertime</th>

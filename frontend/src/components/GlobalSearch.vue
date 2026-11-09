@@ -6,12 +6,14 @@
         <path d="m20 20-3.5-3.5" />
       </svg>
       <input
+        ref="input"
         v-model="query"
         class="gsearch__input"
         type="text"
-        :placeholder="t('search')"
+        :placeholder="searchPlaceholder"
         @input="onInput"
         @focus="query && (open = true)"
+        @keydown.esc="open = false"
       />
       <span v-if="searching" class="gsearch__spinner"></span>
     </div>
@@ -38,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../api'
 import { useI18n } from '../i18n'
@@ -54,8 +56,19 @@ const open = ref(false)
 const searching = ref(false)
 const results = ref([])
 const root = ref(null)
+const input = ref(null)
+
+const searchPlaceholder = computed(() => `${t('search')}  (Ctrl+K)`)
 
 let debounce = null
+
+// Ctrl+K / Cmd+K focuses the search from anywhere
+function onKeydown(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault()
+    input.value?.focus()
+  }
+}
 
 function onInput() {
   clearTimeout(debounce)
@@ -92,8 +105,14 @@ function onClickOutside(e) {
   if (root.value && !root.value.contains(e.target)) open.value = false
 }
 
-onMounted(() => document.addEventListener('click', onClickOutside))
-onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
+onMounted(() => {
+  document.addEventListener('click', onClickOutside)
+  window.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onClickOutside)
+  window.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <div class="layout">
-    <aside class="sidebar glass glass--strong">
+    <aside class="sidebar glass glass--strong" :class="{ 'sidebar--collapsed': collapsed }">
       <div class="sidebar__brand">
         <div class="brand-mark">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -8,7 +8,12 @@
             <path d="M12 7v5l3 2" />
           </svg>
         </div>
-        <span class="brand-name">WorkSight</span>
+        <span v-if="!collapsed" class="brand-name">WorkSight</span>
+        <button class="btn btn--icon sidebar__collapse" :title="collapsed ? 'Expand' : 'Collapse'" @click="toggleCollapse">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="collapsed ? 'transform: scaleX(-1)' : ''">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
       </div>
 
       <nav class="sidebar__nav">
@@ -19,9 +24,10 @@
           class="nav-link"
           active-class="nav-link--active"
           :exact="item.to === '/'"
+          :title="t(item.key)"
         >
           <span class="nav-link__icon" v-html="item.icon"></span>
-          {{ t(item.key) }}
+          <span v-if="!collapsed" class="nav-link__label">{{ t(item.key) }}</span>
         </router-link>
       </nav>
 
@@ -59,7 +65,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../auth'
 import { useI18n } from '../i18n'
@@ -107,6 +113,12 @@ const navItems = [
     icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3 3 3-3"/></svg>'
   },
   {
+    to: '/leaves',
+    key: 'leaveRequests',
+    permission: 'viewLeaves',
+    icon: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/><path d="M12 12v5M9.5 14.5h5"/></svg>'
+  },
+  {
     to: '/departments',
     key: 'departments',
     permission: 'viewEmployees',
@@ -147,6 +159,15 @@ const initials = computed(() =>
   (user.value?.username || 'U').slice(0, 2).toUpperCase()
 )
 
+// Collapsible sidebar (persisted)
+const COLLAPSE_KEY = 'worksight_sidebar_collapsed'
+const collapsed = ref(localStorage.getItem(COLLAPSE_KEY) === '1')
+
+function toggleCollapse() {
+  collapsed.value = !collapsed.value
+  localStorage.setItem(COLLAPSE_KEY, collapsed.value ? '1' : '0')
+}
+
 async function handleLogout() {
   try {
     await api.logout()
@@ -179,6 +200,12 @@ async function handleLogout() {
   position: sticky;
   top: 18px;
   height: calc(100vh - 36px);
+  transition: width 0.22s ease;
+}
+
+.sidebar--collapsed {
+  width: 72px;
+  padding: 24px 10px;
 }
 
 .sidebar__brand {
@@ -187,6 +214,25 @@ async function handleLogout() {
   gap: 11px;
   padding: 0 10px 22px;
 }
+
+.sidebar__collapse {
+  width: 26px;
+  height: 26px;
+  margin-inline-start: auto;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+}
+.sidebar__collapse:hover { color: var(--text); }
+
+.sidebar--collapsed .sidebar__brand { flex-direction: column; padding-inline: 0; }
+.sidebar--collapsed .sidebar__collapse { margin: 8px 0 0; }
+
+.sidebar--collapsed .nav-link { justify-content: center; padding: 11px; }
+.sidebar--collapsed .nav-link__icon { margin: 0; }
+
+.sidebar--collapsed .user-card { justify-content: center; padding: 10px 6px; }
+.sidebar--collapsed .user-card__info { display: none; }
 
 .brand-mark {
   width: 36px;

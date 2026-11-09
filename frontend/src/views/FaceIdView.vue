@@ -113,6 +113,14 @@
           <button class="btn btn--primary" :disabled="!cameraReady || busy" @click="captureAndVerify">
             {{ busy ? t('processing') : t('scanFace') }}
           </button>
+          <button
+            class="btn"
+            :class="autoScan ? 'btn--primary' : 'btn--ghost'"
+            :disabled="!cameraReady"
+            @click="toggleAutoScan"
+          >
+            {{ autoScan ? t('autoScanOn') : t('autoScanOff') }}
+          </button>
         </div>
 
         <p v-if="verifyError" class="form-error">{{ verifyError }}</p>
@@ -193,8 +201,10 @@ const busy = ref(false)
 const enrollError = ref('')
 const verifyError = ref('')
 const result = ref(null)
+const autoScan = ref(false)
 
 let stream = null
+let autoScanTimer = null
 
 const enrolledCount = computed(() => employees.value.filter((e) => e.face_registered).length)
 const enrollPct = computed(() =>
@@ -298,6 +308,29 @@ async function captureAndVerify() {
   }
 }
 
+function toggleAutoScan() {
+  autoScan.value = !autoScan.value
+  if (autoScan.value) {
+    if (result.value?.matched) result.value = null
+    autoScanLoop()
+  } else {
+    clearTimeout(autoScanTimer)
+  }
+}
+
+// Keeps scanning every ~2.5s until a face is matched or the user stops it.
+async function autoScanLoop() {
+  if (!autoScan.value || mode.value !== 'verify') return
+  if (!result.value?.matched) {
+    await captureAndVerify()
+    if (autoScan.value && !result.value?.matched) {
+      autoScanTimer = setTimeout(autoScanLoop, 2500)
+      return
+    }
+  }
+  if (result.value?.matched) autoScan.value = false
+}
+
 async function recordCheck(kind) {
   if (!result.value?.employee_id) return
   busy.value = true
@@ -314,6 +347,8 @@ async function recordCheck(kind) {
 }
 
 async function switchMode(next) {
+  autoScan.value = false
+  clearTimeout(autoScanTimer)
   mode.value = next
   result.value = null
   enrollError.value = ''
@@ -321,7 +356,11 @@ async function switchMode(next) {
   await startCamera()
 }
 
-onBeforeUnmount(() => stopCamera())
+onBeforeUnmount(() => {
+  autoScan.value = false
+  clearTimeout(autoScanTimer)
+  stopCamera()
+})
 </script>
 
 <style scoped>

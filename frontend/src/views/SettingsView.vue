@@ -29,7 +29,7 @@
           <dd><span class="chip chip--success">{{ user?.status || 'active' }}</span></dd>
         </div>
         <div class="settings__row">
-          <dt class="muted">{{ t('role') || 'Role' }}</dt>
+          <dt class="muted">{{ t('role') }}</dt>
           <dd>{{ currentRole }}</dd>
         </div>
       </dl>
