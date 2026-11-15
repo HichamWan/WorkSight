@@ -1,0 +1,382 @@
+/* ============================================================
+   WorkSight — "BizNext" Professional Design System
+   Deep navy / black base · Electric blue accent · Glass surfaces
+   Default: Dark  ·  Alt: Light (blue on white)
+   ============================================================ */
+
+/* -------- DARK (default) — deep navy + electric blue -------- */
+:root {
+  --bg:            radial-gradient(1200px 800px at 85% -10%, #12275c 0%, transparent 55%),
+                   radial-gradient(900px 700px at -10% 110%, #0c1f4d 0%, transparent 50%),
+                   linear-gradient(160deg, #050b1c 0%, #081228 45%, #060d20 100%);
+  --bg-color:      #060d20;
+  --surface:       rgba(15, 28, 60, 0.62);
+  --surface-2:     rgba(20, 34, 70, 0.5);
+  --surface-3:     rgba(9, 18, 42, 0.72);
+  --surface-solid: #0d1a3a;
+  --border:        rgba(120, 160, 255, 0.16);
+  --border-strong: rgba(130, 170, 255, 0.32);
+
+  --text:        #eef3ff;
+  --text-2:      rgba(222, 233, 255, 0.74);
+  --text-muted:  rgba(200, 216, 250, 0.48);
+
+  --accent:        #2e7dff;
+  --accent-strong: #5b9bff;
+  --accent-2:      #38bdf8;   /* cyan highlight */
+  --accent-soft:   rgba(46, 125, 255, 0.14);
+  --accent-border: rgba(91, 155, 255, 0.42);
+  --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #2e7dff 55%, #1e4fd8 100%);
+  --accent-glow:     rgba(46, 125, 255, 0.45);
+
+  --success: #34d399; --success-soft: rgba(52, 211, 153, 0.12);
+  --warning: #fbbf24; --warning-soft: rgba(251, 191, 36, 0.12);
+  --danger:  #fb7185; --danger-soft:  rgba(251, 113, 133, 0.12);
+
+  --hairline:   rgba(130, 165, 255, 0.14);
+  --hairline-2: rgba(130, 165, 255, 0.08);
+  --row-hover:  rgba(70, 125, 255, 0.08);
+  --th-bg:      rgba(10, 22, 50, 0.55);
+  --scrollbar:  rgba(120, 160, 255, 0.28);
+
+  --input-bg:       rgba(8, 16, 38, 0.6);
+  --input-border:   rgba(120, 160, 255, 0.22);
+  --input-focus:    rgba(12, 24, 54, 0.75);
+  --input-ring:     rgba(46, 125, 255, 0.28);
+
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow:     0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md:  0 12px 32px -12px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 4px 18px -6px rgba(46, 125, 255, 0.35);
+
+  --glass-border-soft: rgba(130, 165, 255, 0.14);
+  --glass-fill-c: rgba(18, 32, 66, 0.45);
+
+  --radius:     8px;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-pill: 999px;
+
+  --sidebar-width: 240px;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: dark;
+
+  /* aliases used across components */
+  --text-primary: var(--text);
+  --text-secondary: var(--text-2);
+  --brand-grad: var(--accent);
+}
+
+/* -------- LIGHT — professional white + electric blue -------- */
+html[data-theme='light'] {
+  --bg:            radial-gradient(1100px 700px at 85% -10%, rgba(46, 125, 255, 0.10) 0%, transparent 55%),
+                   radial-gradient(900px 600px at -10% 110%, rgba(56, 189, 248, 0.10) 0%, transparent 50%),
+                   linear-gradient(160deg, #f4f7fd 0%, #eef2fa 50%, #f2f5fb 100%);
+  --bg-color:      #f2f5fb;
+  --surface:       rgba(255, 255, 255, 0.86);
+  --surface-2:     rgba(246, 249, 255, 0.9);
+  --surface-3:     #ffffff;
+  --surface-solid: #ffffff;
+  --border:        #dfe6f3;
+  --border-strong: #c4cfe4;
+
+  --text:       #0f1c3d;
+  --text-2:     #46506b;
+  --text-muted: #8b93a9;
+
+  --accent:        #1f6bff;
+  --accent-strong: #0f54e0;
+  --accent-2:      #0ea5e9;
+  --accent-soft:   rgba(31, 107, 255, 0.09);
+  --accent-border: rgba(31, 107, 255, 0.32);
+  --accent-gradient: linear-gradient(135deg, #2ea8f8 0%, #1f6bff 55%, #1444c8 100%);
+  --accent-glow:     rgba(31, 107, 255, 0.30);
+
+  --success: #178a5c; --success-soft: rgba(23, 138, 92, 0.10);
+  --warning: #a8720c; --warning-soft: rgba(168, 114, 12, 0.10);
+  --danger:  #c22740; --danger-soft:  rgba(194, 39, 64, 0.09);
+
+  --hairline:   #e4e9f4;
+  --hairline-2: #edf1f9;
+  --row-hover:  rgba(31, 107, 255, 0.05);
+  --th-bg:      #f5f8fd;
+  --scrollbar:  rgba(110, 125, 160, 0.30);
+
+  --input-bg:       #ffffff;
+  --input-border:   #d5dcec;
+  --input-focus:    #ffffff;
+  --input-ring:     rgba(31, 107, 255, 0.20);
+
+  --shadow-sm: 0 1px 2px rgba(15, 28, 61, 0.06);
+  --shadow:    0 1px 3px rgba(15, 28, 61, 0.07), 0 1px 2px rgba(15, 28, 61, 0.04);
+  --shadow-md: 0 10px 28px -12px rgba(15, 28, 61, 0.18);
+  --shadow-soft: 0 4px 16px -6px rgba(31, 107, 255, 0.28);
+
+  --glass-border-soft: #e4e9f4;
+  --glass-fill-c: #f6f9ff;
+
+  color-scheme: light;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background-color: var(--bg-color);
+  background: var(--bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background 0.25s ease, color 0.2s ease;
+}
+
+#app { min-height: 100vh; }
+
+/* The animated 3D space background lives in SpaceBackground.vue */
+
+/* ============================================================
+   Glass surfaces
+   ============================================================ */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass--strong {
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.glass--soft {
+  background: var(--surface-2);
+  border-color: var(--hairline);
+  box-shadow: none;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+}
+
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn--primary {
+  color: #fff;
+  background: var(--accent-gradient);
+  border-color: transparent;
+  box-shadow: 0 4px 14px -4px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn--primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px -4px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+  box-shadow: none;
+}
+.btn--ghost:hover { background: var(--row-hover); }
+
+.btn--danger {
+  color: #fff;
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn--sm { padding: 6px 12px; font-size: 0.8rem; }
+
+.btn--icon {
+  width: 36px; height: 36px;
+  padding: 0;
+  border-radius: var(--radius);
+  color: var(--text-2);
+}
+
+/* ============================================================
+   Inputs
+   ============================================================ */
+.input,
+.select {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.input::placeholder { color: var(--text-muted); }
+.input:hover, .select:hover { border-color: var(--border-strong); }
+
+.input:focus,
+.select:focus {
+  background: var(--input-focus);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--input-ring);
+}
+
+.select { appearance: none; cursor: pointer; }
+.select option { background: var(--surface-solid); color: var(--text); }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field__label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+.table-wrap { overflow-x: auto; border-radius: var(--radius-md); }
+.table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+.table th {
+  text-align: start;
+  padding: 11px 16px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--th-bg);
+}
+
+.table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--hairline-2);
+  color: var(--text-2);
+}
+.table tbody tr { transition: background 0.12s ease; }
+.table tbody tr:hover { background: var(--row-hover); }
+.table tbody tr:last-child td { border-bottom: none; }
+
+/* ============================================================
+   Status chips
+   ============================================================ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  background: var(--surface-2);
+}
+
+.chip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.chip--success { background: var(--success-soft); color: var(--success); border-color: transparent; }
+.chip--success::before { background: var(--success); }
+.chip--warning { background: var(--warning-soft); color: var(--warning); border-color: transparent; }
+.chip--warning::before { background: var(--warning); }
+.chip--danger  { background: var(--danger-soft);  color: var(--danger);  border-color: transparent; }
+.chip--danger::before  { background: var(--danger); }
+.chip--accent  { background: var(--accent-soft);  color: var(--accent-strong); border-color: transparent; }
+.chip--accent::before  { background: var(--accent); }
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+.page-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+.page-subtitle { font-size: 0.9rem; color: var(--text-2); }
+.muted { color: var(--text-muted) !important; }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger  { color: var(--danger); }
+.hidden { display: none !important; }
+
+/* Dashboard ring helpers */
+.ring-track { stroke: var(--hairline); }
+.ring-stop-a { stop-color: var(--accent-2); }
+.ring-stop-b { stop-color: var(--accent); }
+.ring-value  { fill: var(--text); }
+.ring-label  { fill: var(--text-muted); }
+
+/* Brand gradient (used by avatars) */
+:root { --brand-grad: var(--accent); }
+html[data-theme='light'] { --brand-grad: var(--accent); }
+
+/* ============================================================
+   Print — clean report printing (hides app chrome)
+   ============================================================ */
+@media print {
+  .space-bg, .sidebar, .topbar, .bell__menu, .gsearch__menu,
+  .lang__menu, .btn, .toolbar__group--actions, .toast-host {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .glass, .table-card {
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+  .table th, .table td { color: #111 !important; border-color: #ccc !important; }
+  .layout { padding: 0 !important; max-width: none !important; }
+  .content { gap: 10px !important; }
+}

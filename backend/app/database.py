@@ -14,6 +14,8 @@ db_clients = []
 db_users = []
 db_employees = []
 db_attendance = []
+db_leaves = []  # Leave requests: {id, client_id, employee_id, start_date, end_date, reason, status, created_at}
+db_activity = []  # Audit trail: {id, client_id, username, action, detail, created_at}
 db_face_embeddings = {}  # Format: {"employee_id_string": [float, float, ...]}
 
 def save_to_json():
@@ -24,6 +26,8 @@ def save_to_json():
         "db_users": db_users,
         "db_employees": db_employees,
         "db_attendance": db_attendance,
+        "db_leaves": db_leaves,
+        "db_activity": db_activity,
         "db_face_embeddings": db_face_embeddings
     }
     with open(JSON_DB_PATH, "w", encoding="utf-8") as f:
@@ -31,8 +35,8 @@ def save_to_json():
 
 def load_from_json():
     """Loads records from database.json on server startup, or seeds default data if empty."""
-    global db_admins, db_clients, db_users, db_employees, db_attendance, db_face_embeddings
-    
+    global db_admins, db_clients, db_users, db_employees, db_attendance, db_leaves, db_activity, db_face_embeddings
+
     if os.path.exists(JSON_DB_PATH):
         try:
             with open(JSON_DB_PATH, "r", encoding="utf-8") as f:
@@ -42,6 +46,8 @@ def load_from_json():
                 db_users = data.get("db_users", [])
                 db_employees = data.get("db_employees", [])
                 db_attendance = data.get("db_attendance", [])
+                db_leaves = data.get("db_leaves", [])
+                db_activity = data.get("db_activity", [])
                 db_face_embeddings = data.get("db_face_embeddings", {})
                 print(f"[DATABASE INFO] Successfully loaded persisted states from local file schema.")
                 return
@@ -73,6 +79,12 @@ def load_from_json():
         "id": 1001, "employee_id": 101, "client_id": 1, "date": "2026-09-17",
         "check_in": "2026-09-17T08:52:00", "check_out": "2026-09-17T18:10:00", "status": "on_time",
         "worked_hours": 9.3, "overtime_hours": 1.3, "undertime_hours": 0
+    })
+    db_leaves.append({
+        "id": 5001, "client_id": 1, "employee_id": 101,
+        "start_date": "2026-11-20", "end_date": "2026-11-21",
+        "reason": "Family event", "status": "pending",
+        "created_at": "2026-11-01T09:30:00"
     })
     
     # Save newly seeded fields straight away
