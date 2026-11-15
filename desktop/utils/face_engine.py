@@ -29,12 +29,13 @@ class FaceEngine:
             feature_a, feature_b, cv2.FaceRecognizerSF_FR_COSINE)
 
     def identify(self, feature, known):
-        """known = {name: feature}. Returns (name or None, best_score)."""
-        best_name, best_score = None, -1.0
-        for name, saved in known.items():
-            s = self.score(feature, saved)
-            if s > best_score:
-                best_name, best_score = name, s
+        """known = {id: [features]}. Returns (id or None, best_score)."""
+        best_id, best_score = None, -1.0
+        for emp_id, saved_list in known.items():
+            for saved in saved_list:
+                s = self.score(feature, saved)
+                if s > best_score:
+                    best_id, best_score = emp_id, s
         if best_score >= THRESHOLD:
-            return best_name, best_score
+            return best_id, best_score
         return None, best_score
