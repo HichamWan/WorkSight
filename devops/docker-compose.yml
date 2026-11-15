@@ -1,0 +1,49 @@
+# WorkSight local database.
+# Start:  docker compose up -d        (or docker-compose up -d on older Docker)
+# Reset:  docker compose down -v      (wipes the volume so init.sql runs again)
+#
+# init.sql only runs when the data volume is EMPTY (first boot). If you change
+# db/init.sql, run `down -v` first or the change will not apply.
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: worksight_db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+08:00
+    ports:
+      - "${DB_HOST_PORT}:3306"
+    volumes:
+      - worksight_db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # Backend container: enable once Hicham's FastAPI app has a Dockerfile.
+  # backend:
+  #   build: ./backend
+  #   container_name: worksight_api
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   env_file: .env
+  #   environment:
+  #     DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+  #   ports:
+  #     - "8000:8000"
+
+volumes:
+  worksight_db_data:
