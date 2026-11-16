@@ -61,7 +61,7 @@ defineExpose({ show, cancel })
 
 <style scoped>
 .confirm-backdrop {
-  z-index: 90;
+  z-index: 200;
 }
 
 .confirm {

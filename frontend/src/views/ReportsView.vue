@@ -41,7 +41,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in rows" :key="row.id ?? index">
+            <tr
+              v-for="(row, index) in rows"
+              :key="row.id ?? index"
+              :class="{ 'report-row--link': row.employee_id }"
+              @click="row.employee_id && router.push(`/employees/${row.employee_id}`)"
+            >
               <td v-for="col in columns" :key="col">{{ formatCell(col, row[col]) }}</td>
             </tr>
           </tbody>
@@ -53,10 +58,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api, downloadReport } from '../api'
 import { useI18n } from '../i18n'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const TYPES = {
   attendance: { key: 'attendanceReport', load: () => api.reportAttendance() },
@@ -130,6 +137,9 @@ onMounted(load)
 </script>
 
 <style scoped>
+.report-row--link { cursor: pointer; transition: background 0.15s ease; }
+.report-row--link:hover { background: var(--accent-soft); }
+
 .toolbar {
   display: flex;
   align-items: flex-end;

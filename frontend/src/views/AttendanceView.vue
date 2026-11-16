@@ -47,19 +47,23 @@
           <table class="table">
             <thead>
               <tr>
-                <th class="sortable" @click="toggleSort('employee_name')">Employee {{ arrow('employee_name') }}</th>
-                <th class="sortable" @click="toggleSort('date')">Date {{ arrow('date') }}</th>
+                <th class="sortable" @click="toggleSort('employee_name')">{{ t('employee') }} {{ arrow('employee_name') }}</th>
+                <th class="sortable" @click="toggleSort('date')">{{ t('date') }} {{ arrow('date') }}</th>
                 <th>{{ t('checkIn') }}</th>
                 <th>{{ t('checkOut') }}</th>
-                <th class="sortable" @click="toggleSort('worked_hours')">Worked {{ arrow('worked_hours') }}</th>
-                <th>Overtime</th>
-                <th>Undertime</th>
-                <th class="sortable" @click="toggleSort('status')">Status {{ arrow('status') }}</th>
+                <th class="sortable" @click="toggleSort('worked_hours')">{{ t('worked') }} {{ arrow('worked_hours') }}</th>
+                <th>{{ t('overtime') }}</th>
+                <th>{{ t('undertime') }}</th>
+                <th class="sortable" @click="toggleSort('status')">{{ t('status') }} {{ arrow('status') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="row in pageRows" :key="row.id">
-                <td class="strong">{{ row.employee_name }}</td>
+                <td class="strong">
+                  <router-link :to="`/employees/${row.employee_id}`" class="att-link">
+                    {{ row.employee_name }}
+                  </router-link>
+                </td>
                 <td>{{ row.date }}</td>
                 <td>{{ formatTime(row.check_in) }}</td>
                 <td>{{ formatTime(row.check_out) }}</td>
@@ -279,6 +283,17 @@ onMounted(() => {
 .strong {
   color: var(--text-primary);
   font-weight: 600;
+}
+
+.att-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.att-link:hover {
+  color: var(--accent-strong);
+  border-bottom-color: var(--accent-border);
 }
 
 .sortable {

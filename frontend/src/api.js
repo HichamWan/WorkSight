@@ -74,6 +74,9 @@ async function request(path, { method = 'GET', body, formData, params } = {}) {
 }
 
 export const api = {
+  // ---------- System ----------
+  health: () => request('/health'),
+
   // ---------- Auth ----------
   login: (username, password) =>
     request('/hr/auth/login', { method: 'POST', body: { username, password } }),
@@ -84,6 +87,15 @@ export const api = {
   logout: () => request('/hr/auth/logout', { method: 'POST' }),
 
   me: () => request('/hr/auth/me'),
+  profile: () => request('/hr/auth/profile'),
+  updateProfile: (email) => request('/hr/auth/profile', { method: 'PUT', body: { email } }),
+  avatarUrl: (filename) => filename ? `${BASE_URL}/avatars/${encodeURIComponent(filename)}` : null,
+  uploadAvatar: (file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return request('/hr/auth/profile/avatar', { method: 'POST', formData: fd })
+  },
+  removeAvatar: () => request('/hr/auth/profile/avatar', { method: 'DELETE' }),
 
   changePassword: (currentPassword, newPassword) =>
     request('/hr/auth/change-password', {
@@ -116,6 +128,8 @@ export const api = {
   alertsOvertime: () => request('/hr/alerts/overtime'),
   alertsUndertime: () => request('/hr/alerts/under-time'),
   alertsLate: () => request('/hr/alerts/late'),
+  markAlertsRead: (keys) => request('/hr/alerts/read', { method: 'POST', body: { keys } }),
+  markAllAlertsRead: () => request('/hr/alerts/read', { method: 'POST', body: { all: true } }),
 
   // ---------- Face AI ----------
   registerFace: (employeeId, file) => {

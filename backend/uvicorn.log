@@ -1,15 +1,48 @@
 [DATABASE INFO] Successfully loaded persisted states from local file schema.
-INFO:     Started server process [924]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:62438 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62438 - "GET /api/hr/activity HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62438 - "POST /api/hr/employees HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62438 - "DELETE /api/hr/employees/103 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62438 - "GET /api/hr/activity HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53928 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53928 - "GET /api/hr/activity HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53928 - "POST /api/hr/employees HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53928 - "DELETE /api/hr/employees/103 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53928 - "GET /api/hr/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61851 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61855 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53953 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53954 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53955 - "GET /api/hr/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53956 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53957 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53958 - "GET /api/hr/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53959 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53960 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53961 - "GET /api/hr/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60874 - "OPTIONS /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60874 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51165 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59542 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59542 - "OPTIONS /api/hr/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55099 - "OPTIONS /api/hr/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55388 - "OPTIONS /api/hr/dashboard/today HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59542 - "OPTIONS /api/hr/dashboard/analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49679 - "OPTIONS /api/hr/work-hours HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62697 - "GET /api/hr/alerts HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49350 - "OPTIONS /api/hr/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55099 - "GET /api/hr/dashboard/summary HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55388 - "GET /api/hr/dashboard/today HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:59542 - "GET /api/hr/dashboard/analytics HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49350 - "GET /api/hr/activity HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49679 - "GET /api/hr/work-hours HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49679 - "OPTIONS /api/hr/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49350 - "POST /api/hr/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49350 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59542 - "GET /api/hr/dashboard/today HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49350 - "GET /api/hr/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55388 - "GET /api/hr/dashboard/analytics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49679 - "GET /api/hr/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55099 - "GET /api/hr/work-hours HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62697 - "GET /api/hr/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56818 - "OPTIONS /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56662 - "OPTIONS /api/hr/attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56662 - "GET /api/hr/attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49904 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49904 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62425 - "OPTIONS /api/hr/leaves HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50713 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62425 - "GET /api/hr/leaves HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62425 - "GET /api/hr/employees HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50713 - "GET /api/hr/attendance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63556 - "GET /api/health HTTP/1.1" 200 OK

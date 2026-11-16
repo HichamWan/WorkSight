@@ -9,10 +9,7 @@
       <div class="login-card__glow" aria-hidden="true"></div>
 
       <div class="brand-mark">
-        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 7v5l3 2" />
-        </svg>
+        <img src="/logo-sm.png" alt="WorkSight" class="brand-mark__img" />
       </div>
 
       <h1 class="login-title">{{ isRegister ? t('createAccountTitle') : t('welcomeBack') }}</h1>
@@ -218,15 +215,22 @@ async function submitRegister() {
 }
 
 .brand-mark {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
   margin-bottom: 22px;
-  background: var(--accent-gradient);
-  box-shadow: 0 4px 16px var(--accent-glow);
+  overflow: hidden;
+  background: #070d20;
+  box-shadow: 0 6px 22px -6px var(--accent-glow);
   color: #fff;
+}
+
+.brand-mark__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .login-title {

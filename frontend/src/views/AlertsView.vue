@@ -3,9 +3,17 @@
     <section class="glass table-card">
       <div class="table-card__head">
         <h2 class="panel__title">{{ activeLabel }} {{ t('alerts') }}</h2>
-        <span class="chip" :class="alerts.length ? 'chip--warning' : 'chip--success'">
-          {{ alerts.length }} {{ t('total') }}
-        </span>
+        <div class="alerts__head-actions">
+          <span v-if="unreadCount" class="chip chip--accent">
+            {{ unreadCount }} {{ t('unread') }}
+          </span>
+          <span class="chip" :class="alerts.length ? 'chip--warning' : 'chip--success'">
+            {{ alerts.length }} {{ t('total') }}
+          </span>
+          <button v-if="unreadCount" class="btn btn--ghost btn--sm" @click="markAll">
+            {{ t('markAllRead') }}
+          </button>
+        </div>
       </div>
 
       <div class="tabs">
@@ -26,7 +34,18 @@
       <div v-if="loading" class="empty muted">{{ t('loadingAlerts') }}</div>
       <div v-else-if="alerts.length === 0" class="empty muted">{{ t('noAlerts') }}</div>
       <ul v-else class="alert-list">
-        <li v-for="alert in alerts" :key="alert.id" class="alert-item glass--soft">
+        <li
+          v-for="alert in alerts"
+          :key="alert.key || alert.id"
+          class="alert-item glass--soft alert-item--link"
+          :class="{ 'alert-item--read': alert.read }"
+          role="link"
+          tabindex="0"
+          :title="t('viewProfile')"
+          @click="openAlert(alert)"
+          @keydown.enter.prevent="openAlert(alert)"
+        >
+          <span v-if="!alert.read" class="alert-item__unread" :title="t('unread')"></span>
           <div class="alert-item__icon" :class="toneClass(alert.type)" v-html="icon"></div>
           <div class="alert-item__body">
             <strong>{{ alert.employee_name }}</strong>
@@ -44,15 +63,37 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '../api'
 import { useI18n } from '../i18n'
+import { markAlertsRead, markAllAlertsRead } from '../alertsStore'
 
 const { t } = useI18n()
+const router = useRouter()
+
+function go(to) {
+  if (to && to !== '/employees/undefined' && to !== '/employees/null') router.push(to)
+}
 
 const alerts = ref([])
 const loading = ref(true)
 const error = ref('')
 const activeTab = ref('all')
+
+const unreadCount = computed(() => alerts.value.filter((a) => !a.read).length)
+
+function openAlert(alert) {
+  if (alert && !alert.read) {
+    alert.read = true
+    markAlertsRead([alert.key || alert.id])
+  }
+  go(`/employees/${alert.employee_id}`)
+}
+
+async function markAll() {
+  alerts.value = alerts.value.map((a) => ({ ...a, read: true }))
+  await markAllAlertsRead()
+}
 
 const tabs = [
   { key: 'all', key2: 'all', load: () => api.alerts() },
@@ -113,7 +154,15 @@ onMounted(load)
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 16px;
+}
+
+.alerts__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .panel__title {
@@ -185,7 +234,27 @@ onMounted(load)
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border-soft);
   background: var(--glass-bg-soft);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
 }
+
+.alert-item__unread {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.alert-item--read { opacity: 0.66; }
+
+.alert-item--link { cursor: pointer; }
+.alert-item--link:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+  transform: translateX(3px);
+}
+.alert-item--link:focus-visible { outline: 2px solid var(--accent); }
 
 .alert-item__icon {
   width: 36px;

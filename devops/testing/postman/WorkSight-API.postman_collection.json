@@ -1,0 +1,1708 @@
+{
+  "info": {
+    "name": "WorkSight API",
+    "description": "Built from Hicham's WorkSight_API_Contract.md (Week 2). Covers every endpoint in section 16 of the contract, grouped to match the doc's own sections.\n\nAuth note: the contract doesn't explicitly document the Authorization header format for non-login requests -- this collection assumes `Authorization: Bearer <access_token>`, auto-captured from the Login responses into {{admin_token}} / {{hr_token}}. Confirm this with Hicham and adjust if the real backend expects something different.\n\nRun 'Login (Super Admin)' and 'Login (HR/Manager/Executive)' first -- their test scripts save the tokens for every other request in this collection automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Admin Auth",
+      "item": [
+        {
+          "name": "Login (Super Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/auth/login",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Login succeeded', function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test('Access token present', function () { pm.expect(pm.response.json()).to.have.property('access_token'); });",
+                  "if (pm.response.code === 200) { pm.environment.set('admin_token', pm.response.json().access_token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout (Super Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/auth/logout",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get current admin (me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/auth/me",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Client / Company Management",
+      "item": [
+        {
+          "name": "List clients",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/clients",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "clients"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has clients array', function () { pm.expect(pm.response.json()).to.have.property('clients'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create client",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/clients",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "clients"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"ABC Technology\",\n  \"company_code\": \"ABC001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });",
+                  "pm.test('success true', function () { pm.expect(pm.response.json().success).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get one client",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/clients/{{client_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "clients",
+                "{{client_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update client",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/clients/{{client_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "clients",
+                "{{client_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company_name\": \"ABC Technology Ltd\",\n  \"company_code\": \"ABC001\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete client",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/clients/{{client_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "clients",
+                "{{client_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Client User / HR Account Management",
+      "item": [
+        {
+          "name": "List client's users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/clients/{{client_id}}/users",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "clients",
+                "{{client_id}}",
+                "users"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create HR/Manager/Executive account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/clients/{{client_id}}/users",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "clients",
+                "{{client_id}}",
+                "users"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"email\": \"alice@abc.com\",\n  \"password\": \"temporary-password\",\n  \"role\": \"HR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get one client user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/users/{{user_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update client user",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/users/{{user_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"email\": \"alice@abc.com\",\n  \"role\": \"HR\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete/deactivate client user",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/admin/users/{{user_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{user_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "HR Auth",
+      "item": [
+        {
+          "name": "Login (HR/Manager/Executive)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/auth/login",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Login succeeded', function () { pm.expect(pm.response.json().success).to.eql(true); });",
+                  "pm.test('client_id present on user', function () { pm.expect(pm.response.json().user).to.have.property('client_id'); });",
+                  "if (pm.response.code === 200) { pm.environment.set('hr_token', pm.response.json().access_token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout (HR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/auth/logout",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get current HR user (me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/auth/me",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "List employees",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/employees",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "employees"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has employees array', function () { pm.expect(pm.response.json()).to.have.property('employees'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register employee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/employees",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "employees"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_code\": \"EMP001\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Smith\",\n  \"email\": \"john@abc.com\",\n  \"phone\": \"123456789\",\n  \"department\": \"IT\",\n  \"position\": \"Software Engineer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get one employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/employees/{{employee_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "employees",
+                "{{employee_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update employee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/employees/{{employee_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "employees",
+                "{{employee_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_code\": \"EMP001\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Smith\",\n  \"email\": \"john@abc.com\",\n  \"phone\": \"123456789\",\n  \"department\": \"IT\",\n  \"position\": \"Software Engineer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete employee (permanent)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/employees/{{employee_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "employees",
+                "{{employee_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Check-in",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/attendance/check-in",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "attendance",
+                "check-in"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 101,\n  \"timestamp\": \"2026-09-17T08:52:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });",
+                  "pm.test('Returns attendance record', function () { pm.expect(pm.response.json()).to.have.property('attendance'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check-out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/attendance/check-out",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "attendance",
+                "check-out"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employee_id\": 101,\n  \"timestamp\": \"2026-09-17T18:10:00\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });",
+                  "pm.test('worked_hours present', function () { pm.expect(pm.response.json().attendance).to.have.property('worked_hours'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get attendance history",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/attendance?start_date=2026-09-01&end_date=2026-09-17&employee_id=101&department=IT&status=on_time",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-09-01",
+                  "disabled": true
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-09-17",
+                  "disabled": true
+                },
+                {
+                  "key": "employee_id",
+                  "value": "101",
+                  "disabled": true
+                },
+                {
+                  "key": "department",
+                  "value": "IT",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "on_time",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get one attendance record",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/attendance/{{attendance_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "attendance",
+                "{{attendance_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Work Hours",
+      "item": [
+        {
+          "name": "Get work-hour summaries",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/work-hours?start_date=2026-09-01&end_date=2026-09-17&employee_id=101&department=IT",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "work-hours"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-09-01",
+                  "disabled": true
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-09-17",
+                  "disabled": true
+                },
+                {
+                  "key": "employee_id",
+                  "value": "101",
+                  "disabled": true
+                },
+                {
+                  "key": "department",
+                  "value": "IT",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get work-hours for one employee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/work-hours/{{employee_id}}",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "work-hours",
+                "{{employee_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Dashboard summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/dashboard/summary",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "dashboard",
+                "summary"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has total_employees', function () { pm.expect(pm.response.json()).to.have.property('total_employees'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dashboard today",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/dashboard/today",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "dashboard",
+                "today"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dashboard analytics (chart data)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/dashboard/analytics",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "dashboard",
+                "analytics"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has attendance_trend', function () { pm.expect(pm.response.json()).to.have.property('attendance_trend'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Alerts",
+      "item": [
+        {
+          "name": "All alerts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/alerts",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "alerts"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Overtime alerts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/alerts/overtime",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "alerts",
+                "overtime"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Under-time alerts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/alerts/under-time",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "alerts",
+                "under-time"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Late-arrival alerts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/alerts/late",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "alerts",
+                "late"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Face AI",
+      "item": [
+        {
+          "name": "Register face",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{API_BASE_URL}}/face/register",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "face",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "employee_id",
+                  "value": "101",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 2xx', function () { pm.response.to.be.success; });",
+                  "pm.test('face_registered true', function () { pm.expect(pm.response.json().face_registered).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify face",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{API_BASE_URL}}/face/verify",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "face",
+                "verify"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Has matched field', function () { pm.expect(pm.response.json()).to.have.property('matched'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Attendance report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/reports/attendance?start_date=2026-09-01&end_date=2026-09-17&employee_id=101&department=IT",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "reports",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-09-01",
+                  "disabled": true
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-09-17",
+                  "disabled": true
+                },
+                {
+                  "key": "employee_id",
+                  "value": "101",
+                  "disabled": true
+                },
+                {
+                  "key": "department",
+                  "value": "IT",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Work-hours report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/reports/work-hours?start_date=2026-09-01&end_date=2026-09-17&employee_id=101&department=IT",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "reports",
+                "work-hours"
+              ],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2026-09-01",
+                  "disabled": true
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-09-17",
+                  "disabled": true
+                },
+                {
+                  "key": "employee_id",
+                  "value": "101",
+                  "disabled": true
+                },
+                {
+                  "key": "department",
+                  "value": "IT",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Export report (CSV/XLSX)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{hr_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{API_BASE_URL}}/hr/reports/export?report_type=attendance&format=csv&start_date=2026-09-01&end_date=2026-09-17&employee_id=101&department=IT",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "hr",
+                "reports",
+                "export"
+              ],
+              "query": [
+                {
+                  "key": "report_type",
+                  "value": "attendance"
+                },
+                {
+                  "key": "format",
+                  "value": "csv"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2026-09-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-09-17"
+                },
+                {
+                  "key": "employee_id",
+                  "value": "101",
+                  "disabled": true
+                },
+                {
+                  "key": "department",
+                  "value": "IT",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{API_BASE_URL}}/health",
+              "host": [
+                "{{API_BASE_URL}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('status is ok', function () { pm.expect(pm.response.json().status).to.eql('ok'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "client_id",
+      "value": "1"
+    },
+    {
+      "key": "employee_id",
+      "value": "101"
+    },
+    {
+      "key": "user_id",
+      "value": "10"
+    },
+    {
+      "key": "attendance_id",
+      "value": "1001"
+    }
+  ]
+}

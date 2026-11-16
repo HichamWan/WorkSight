@@ -26,7 +26,7 @@ const { items, dismiss } = useToast()
   position: fixed;
   bottom: 24px;
   inset-inline-end: 24px;
-  z-index: 100;
+  z-index: 300;
   display: flex;
   flex-direction: column;
   gap: 10px;

@@ -85,7 +85,7 @@ def get_clients(current_user: dict = Depends(require_role(["ADMIN"]))):
 
 @router.post("/clients")
 def create_client(payload: ClientCreateReq, current_user: dict = Depends(require_role(["ADMIN"]))):
-    new_id = len(db_clients) + 1
+    new_id = max((c["id"] for c in db_clients), default=0) + 1
     new_client = {
         "id": new_id,
         "company_name": payload.company_name,

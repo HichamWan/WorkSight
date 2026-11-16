@@ -2,9 +2,16 @@
   <div class="employees">
     <section class="glass toolbar">
       <input v-model="query" class="input toolbar__search" type="text" :placeholder="t('searchEmployees')" />
+      <select v-model="deptFilter" class="select toolbar__dept" :title="t('department')">
+        <option value="">{{ t('department') }} · {{ t('viewAll') }}</option>
+        <option v-for="d in departmentsList" :key="d" :value="d">{{ d }}</option>
+      </select>
+      <button v-if="deptFilter" class="btn btn--ghost btn--sm" @click="deptFilter = ''">✕</button>
       <div class="toolbar__spacer"></div>
       <button class="btn btn--ghost" :disabled="loading" @click="exportCsv">{{ t('exportCsv') }}</button>
-      <button v-if="canCreate" class="btn btn--ghost" @click="fileInput?.click()">{{ t('importCsv') }}</button>
+      <button v-if="canCreate" class="btn btn--ghost" :disabled="importing" @click="fileInput?.click()">
+        {{ importing ? t('loading') : t('importCsv') }}
+      </button>
       <input ref="fileInput" type="file" accept=".csv,text/csv" class="hidden" @change="importCsv" />
       <button v-if="canCreate" class="btn btn--primary" @click="openModal()">+ {{ t('addEmployee') }}</button>
     </section>
@@ -111,9 +118,9 @@
           <p v-if="formError" class="form-error">{{ formError }}</p>
 
           <div class="modal__actions">
-            <button type="button" class="btn btn--ghost" @click="closeModal">Cancel</button>
+            <button type="button" class="btn btn--ghost" @click="closeModal">{{ t('cancel') }}</button>
             <button type="submit" class="btn btn--primary" :disabled="saving">
-              {{ saving ? 'Saving…' : editing ? 'Update employee' : 'Create employee' }}
+              {{ saving ? t('saving') : editing ? t('updateEmployee') : t('createEmployee') }}
             </button>
           </div>
         </form>
@@ -123,11 +130,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { api } from '../api'
 import { can } from '../roles'
 import { useAuth } from '../auth'
 import { useTable } from '../table'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from '../i18n'
 import { notify } from '../toast'
 import Pager from '../components/Pager.vue'
@@ -142,6 +150,27 @@ const canDelete = computed(() => can('deleteEmployee', user.value))
 const employees = ref([])
 const loading = ref(true)
 const query = ref('')
+const route = useRoute()
+const router = useRouter()
+const deptFilter = ref(String(route.query.department || ''))
+const departmentsList = computed(() =>
+  [...new Set(employees.value.map((e) => e.department).filter(Boolean))].sort()
+)
+
+watch(deptFilter, (v) => {
+  const q = { ...route.query }
+  if (v) q.department = v
+  else delete q.department
+  router.replace({ query: q })
+})
+
+watch(
+  () => route.query.department,
+  (v) => {
+    deptFilter.value = typeof v === 'string' ? v : ''
+  }
+)
+
 const showModal = ref(false)
 const saving = ref(false)
 const formError = ref('')
@@ -160,9 +189,11 @@ const BLANK_FORM = {
 const form = reactive({ ...BLANK_FORM })
 
 const filtered = computed(() => {
+  let rows = employees.value
+  if (deptFilter.value) rows = rows.filter((e) => e.department === deptFilter.value)
   const q = query.value.trim().toLowerCase()
-  if (!q) return employees.value
-  return employees.value.filter((e) =>
+  if (!q) return rows
+  return rows.filter((e) =>
     [e.first_name, e.last_name, e.email, e.department, e.employee_code]
       .join(' ')
       .toLowerCase()
@@ -321,7 +352,7 @@ const pendingDelete = ref(null)
 
 function askRemove(emp) {
   pendingDelete.value = emp
-  confirmMessage.value = `Delete ${emp.first_name} ${emp.last_name}? This cannot be undone.`
+  confirmMessage.value = t('deleteConfirm', { name: `${emp.first_name} ${emp.last_name}` })
   confirmRef.value?.show()
 }
 
@@ -343,6 +374,8 @@ onMounted(load)
 </script>
 
 <style scoped>
+.toolbar__dept { width: auto; min-width: 160px; }
+
 .toolbar {
   display: flex;
   gap: 14px;
@@ -406,7 +439,7 @@ onMounted(load)
   display: grid;
   place-items: center;
   padding: 24px;
-  z-index: 50;
+  z-index: 200;
 }
 
 .modal {

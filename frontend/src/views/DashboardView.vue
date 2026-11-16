@@ -1,8 +1,19 @@
 <template>
   <div class="dashboard">
+    <p v-if="loadError" class="banner banner--error">{{ t('loadFailed') }}</p>
+
     <!-- Stat cards -->
     <section class="stats">
-      <div v-for="stat in statCards" :key="stat.label" class="stat glass">
+      <div
+        v-for="stat in statCards"
+        :key="stat.label"
+        class="stat glass stat--link"
+        role="link"
+        tabindex="0"
+        :title="stat.title"
+        @click="go(stat.to)"
+        @keydown.enter.prevent="go(stat.to)"
+      >
         <div class="stat__icon" :class="`stat__icon--${stat.tone}`" v-html="stat.icon"></div>
         <div class="stat__body">
           <span class="stat__value">{{ stat.value }}</span>
@@ -32,19 +43,19 @@
             </svg>
           </div>
           <ul class="today__list">
-            <li class="today__row">
+            <li class="today__row today__row--link" role="link" tabindex="0" @click="go('/attendance')" @keydown.enter.prevent="go('/attendance')">
               <span class="muted">{{ t('checkedIn') }}</span>
               <strong>{{ today.checked_in ?? '—' }}</strong>
             </li>
-            <li class="today__row">
+            <li class="today__row today__row--link" role="link" tabindex="0" @click="go('/attendance')" @keydown.enter.prevent="go('/attendance')">
               <span class="muted">{{ t('notCheckedIn') }}</span>
               <strong>{{ today.not_checked_in ?? '—' }}</strong>
             </li>
-            <li class="today__row">
+            <li class="today__row today__row--link" role="link" tabindex="0" @click="go('/attendance')" @keydown.enter.prevent="go('/attendance')">
               <span class="muted">{{ t('onTime') }}</span>
               <strong class="text-success">{{ today.on_time ?? '—' }}</strong>
             </li>
-            <li class="today__row">
+            <li class="today__row today__row--link" role="link" tabindex="0" @click="go('/alerts')" @keydown.enter.prevent="go('/alerts')">
               <span class="muted">{{ t('late') }}</span>
               <strong class="text-warning">{{ today.late ?? '—' }}</strong>
             </li>
@@ -65,7 +76,16 @@
         <h2 class="panel__title">{{ t('workHoursBoard') }}</h2>
         <div v-if="workHours.length === 0" class="empty muted">{{ t('noData') }}</div>
         <ul v-else class="board">
-          <li v-for="(w, i) in topWorkHours" :key="w.employee_id" class="board__row">
+          <li
+            v-for="(w, i) in topWorkHours"
+            :key="w.employee_id"
+            class="board__row board__row--link"
+            role="link"
+            tabindex="0"
+            :title="t('viewProfile')"
+            @click="go(`/employees/${w.employee_id}`)"
+            @keydown.enter.prevent="go(`/employees/${w.employee_id}`)"
+          >
             <span class="board__rank" :class="{ 'board__rank--top': i === 0 }">{{ i + 1 }}</span>
             <span class="board__name">{{ w.employee_name }}</span>
             <div class="board__bar">
@@ -82,7 +102,15 @@
         <h2 class="panel__title">{{ t('recentActivity') }}</h2>
         <div v-if="activity.length === 0" class="empty muted">{{ t('noActivity') }}</div>
         <ul v-else class="feed">
-          <li v-for="a in activity" :key="a.id" class="feed__row">
+          <li
+            v-for="a in activity"
+            :key="a.id"
+            class="feed__row feed__row--link"
+            role="link"
+            tabindex="0"
+            @click="go(activityRoute(a))"
+            @keydown.enter.prevent="go(activityRoute(a))"
+          >
             <span class="feed__dot" :class="`feed__dot--${activityTone(a.action)}`"></span>
             <div class="feed__body">
               <strong>{{ a.username }}</strong>
@@ -98,17 +126,25 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '../api'
 import { useI18n } from '../i18n'
 import TrendChart from '../components/TrendChart.vue'
 
 const { t } = useI18n()
+const router = useRouter()
+
+function go(to) {
+  if (!to) return
+  router.push(to)
+}
 
 const summary = ref({})
 const today = ref({})
 const trend = ref([])
 const workHours = ref([])
 const activity = ref([])
+const loadError = ref(false)
 
 const topWorkHours = computed(() =>
   [...workHours.value].sort((a, b) => b.total_worked_hours - a.total_worked_hours).slice(0, 5)
@@ -141,6 +177,13 @@ function activityTone(action) {
   return 'success'
 }
 
+function activityRoute(a) {
+  if (a.action?.startsWith('leave')) return '/leaves'
+  if (a.action === 'check_in' || a.action === 'check_out') return '/attendance'
+  if (a.action === 'face_enrolled') return '/face'
+  return '/employees'
+}
+
 function feedTime(value) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value
@@ -152,24 +195,32 @@ const statCards = computed(() => [
     label: t('totalEmployees'),
     value: summary.value.total_employees ?? '—',
     tone: 'accent',
+    to: '/employees',
+    title: t('viewAll'),
     icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>'
   },
   {
     label: t('presentToday'),
     value: summary.value.present ?? '—',
     tone: 'success',
+    to: '/attendance',
+    title: t('viewAll'),
     icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
   },
   {
     label: t('lateArrivals'),
     value: summary.value.late ?? '—',
     tone: 'warning',
+    to: '/alerts',
+    title: t('viewAll'),
     icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
   },
   {
     label: t('overtimeHours'),
     value: summary.value.overtime ?? '—',
     tone: 'accent',
+    to: '/reports',
+    title: t('viewAll'),
     icon: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="6"/></svg>'
   }
 ])
@@ -194,13 +245,43 @@ onMounted(async () => {
     trend.value = a.attendance_trend || []
     workHours.value = wh.work_hours || []
     activity.value = act.activity || []
+    loadError.value = false
   } catch (e) {
     console.error('Dashboard load failed:', e)
+    loadError.value = true
   }
 })
 </script>
 
 <style scoped>
+.banner--error {
+  margin-bottom: 14px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+/* clickable dashboard widgets */
+.stat--link { cursor: pointer; }
+.stat--link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.today__row--link { cursor: pointer; border-radius: var(--radius-sm); transition: background 0.15s ease, transform 0.15s ease; }
+.today__row--link:hover { background: var(--accent-soft); transform: translateX(3px); }
+.today__row--link:focus-visible { outline: 2px solid var(--accent); }
+
+.board__row--link { cursor: pointer; border-radius: var(--radius-sm); transition: background 0.15s ease; }
+.board__row--link:hover { background: var(--accent-soft); }
+.board__row--link:hover .board__name { color: var(--accent-strong); }
+.board__row--link:focus-visible { outline: 2px solid var(--accent); }
+
+.feed__row--link { cursor: pointer; border-radius: var(--radius-sm); transition: background 0.15s ease; }
+.feed__row--link:hover { background: var(--accent-soft); }
+.feed__row--link:focus-visible { outline: 2px solid var(--accent); }
+
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

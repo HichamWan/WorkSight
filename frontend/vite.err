@@ -1,0 +1,43 @@
+[2m9:31:40 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: D:/WorkSight/frontend/src/views/AlertsView.vue:92:1: Unexpected }[39m
+  Plugin: [35mvite:vue[39m
+  File: [36mD:/WorkSight/frontend/src/views/AlertsView.vue[39m:214:1
+[33m  213|  }
+  214|  
+  215|  .alert-item__icon {
+     |  ^
+  216|    width: 36px;
+  217|    height: 36px;[39m
+      at Input.error (D:\WorkSight\frontend\node_modules\postcss\lib\input.js:135:16)
+      at Parser.unexpectedClose (D:\WorkSight\frontend\node_modules\postcss\lib\parser.js:602:22)
+      at Parser.end (D:\WorkSight\frontend\node_modules\postcss\lib\parser.js:337:12)
+      at Parser.parse (D:\WorkSight\frontend\node_modules\postcss\lib\parser.js:466:16)
+      at parse (D:\WorkSight\frontend\node_modules\postcss\lib\parse.js:11:12)
+      at new LazyResult (D:\WorkSight\frontend\node_modules\postcss\lib\lazy-result.js:171:16)
+      at Processor.process (D:\WorkSight\frontend\node_modules\postcss\lib\processor.js:53:14)
+      at doCompileStyle (D:\WorkSight\frontend\node_modules\@vue\compiler-sfc\dist\compiler-sfc.cjs.js:20125:36)
+      at Object.compileStyleAsync (D:\WorkSight\frontend\node_modules\@vue\compiler-sfc\dist\compiler-sfc.cjs.js:20045:10)
+      at transformStyle (file:///D:/WorkSight/frontend/node_modules/@vitejs/plugin-vue/dist/index.mjs:2832:41)
+[2m9:33:59 PM[22m [31m[1m[vite][22m[39m Pre-transform error: D:/WorkSight/frontend/src/views/AlertsView.vue:92:1: Unexpected }
+[2m9:34:00 PM[22m [31m[1m[vite][22m[39m Pre-transform error: D:/WorkSight/frontend/src/views/AlertsView.vue:92:1: Unexpected }
+[2m9:34:02 PM[22m [31m[1m[vite][22m[39m Pre-transform error: D:/WorkSight/frontend/src/views/AlertsView.vue:92:1: Unexpected }
+[2m9:34:04 PM[22m [31m[1m[vite][22m[39m Pre-transform error: D:/WorkSight/frontend/src/views/AlertsView.vue:92:1: Unexpected }
+[2m9:34:06 PM[22m [31m[1m[vite][22m[39m Pre-transform error: D:/WorkSight/frontend/src/views/AlertsView.vue:92:1: Unexpected }
+[2m9:35:18 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Element is missing end tag.[39m
+  Plugin: [35mvite:vue[39m
+  File: [36mD:/WorkSight/frontend/src/layouts/AppLayout.vue[39m:4:7
+[33m  2  |    <div class="layout">
+  3  |      <aside class="sidebar glass glass--strong" :class="{ 'sidebar--collapsed': collapsed }">
+  4  |        <router-link to="/" class="sidebar__brand sidebar__brand--link" :title="t('dashboard')">
+     |         ^
+  5  |          <div class="brand-mark">
+  6  |            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">[39m
+      at createCompilerError (D:\WorkSight\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:1378:17)
+      at emitError (D:\WorkSight\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:3035:5)
+      at Object.onclosetag (D:\WorkSight\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:2402:13)
+      at Tokenizer.stateInClosingTagName (D:\WorkSight\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:799:16)
+      at Tokenizer.parse (D:\WorkSight\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:1157:16)
+      at Object.baseParse (D:\WorkSight\frontend\node_modules\@vue\compiler-core\dist\compiler-core.cjs.js:3074:13)
+      at Object.parse (D:\WorkSight\frontend\node_modules\@vue\compiler-dom\dist\compiler-dom.cjs.js:913:23)
+      at Object.parse$1 [as parse] (D:\WorkSight\frontend\node_modules\@vue\compiler-sfc\dist\compiler-sfc.cjs.js:1918:24)
+      at createDescriptor (file:///D:/WorkSight/frontend/node_modules/@vitejs/plugin-vue/dist/index.mjs:71:43)
+      at handleHotUpdate (file:///D:/WorkSight/frontend/node_modules/@vitejs/plugin-vue/dist/index.mjs:2198:26)

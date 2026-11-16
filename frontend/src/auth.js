@@ -34,7 +34,14 @@ export function useAuth() {
     user.value = null
   }
 
+  function setUser(next) {
+    if (next) {
+      storeSession(getToken(), next)
+      user.value = next
+    }
+  }
+
   const isAuthenticated = () => Boolean(getToken())
 
-  return { user, loading, login, register, logout, isAuthenticated }
+  return { user, loading, login, register, logout, setUser, isAuthenticated }
 }

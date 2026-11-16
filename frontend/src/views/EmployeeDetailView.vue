@@ -4,7 +4,10 @@
 
     <p v-if="error" class="banner banner--error">{{ error }}</p>
 
-    <section v-if="loading" class="glass empty muted">{{ t('loadingEmployee') }}</section>
+    <section v-if="loading" class="glass empty muted">
+      <span class="spinner spinner--sm"></span>
+      <span>{{ t('loadingEmployee') }}</span>
+    </section>
 
     <template v-else-if="employee">
       <section class="glass hero">
@@ -87,12 +90,12 @@
       </section>
     </template>
 
-    <section v-else class="glass empty muted">{{ t('employeeNotFound') }}</section>
+    <section v-else-if="!error" class="glass empty muted">{{ t('employeeNotFound') }}</section>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../api'
 import { useTable } from '../table'
@@ -102,6 +105,7 @@ import { can } from '../roles'
 import Pager from '../components/Pager.vue'
 
 const { t } = useI18n()
+const { user } = useAuth()
 
 const route = useRoute()
 const router = useRouter()
@@ -163,14 +167,30 @@ function goBack() {
   router.push({ name: 'employees' })
 }
 
-onMounted(async () => {
-  const id = Number(route.params.id)
+async function load(id) {
+  loading.value = true
+  historyLoading.value = true
+  error.value = ''
+  employee.value = null
+  history.value = []
+
+  if (!Number.isFinite(id)) {
+    loading.value = false
+    historyLoading.value = false
+    return
+  }
+
   try {
     employee.value = await api.employee(id)
   } catch (e) {
-    error.value = e.message || 'Could not load employee'
+    error.value = e.message || t('loadFailed')
   } finally {
     loading.value = false
+  }
+
+  if (!employee.value) {
+    historyLoading.value = false
+    return
   }
 
   try {
@@ -181,7 +201,10 @@ onMounted(async () => {
   } finally {
     historyLoading.value = false
   }
-})
+}
+
+onMounted(() => load(Number(route.params.id)))
+watch(() => route.params.id, (id) => load(Number(id)))
 </script>
 
 <style scoped>
@@ -297,6 +320,10 @@ onMounted(async () => {
   padding: 48px;
   text-align: center;
   font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .banner {
