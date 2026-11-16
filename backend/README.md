@@ -3,7 +3,7 @@
 pip install -r requirements.txt
 * Start the server:
 cd backend
-uvicorn app.main:app --reload --port 8000
+python uvicorn app.main:app --reload --port 8000
 * Open the Interactive API docs to test everything: http://localhost:8000/api/docs
 
 ## 🧪 2. How to test the Face AI & Multi-Tenancy
