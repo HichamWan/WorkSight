@@ -138,7 +138,182 @@ body {
 
 #app { min-height: 100vh; }
 
-/* The animated 3D space background lives in SpaceBackground.vue */
+/* The static photo background lives in SpaceBackground.vue */
+
+/* ============================================================
+   Hover & 3D depth polish
+   ============================================================ */
+
+/* Cards gently lift and gain a blue rim on hover (chrome + tilted cards excluded) */
+.glass:not(.sidebar):not(.topbar):not(.user-card):not(.stat):not(.dept-card):not(.login-card) {
+  transition:
+    background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.glass:not(.sidebar):not(.topbar):not(.user-card):not(.stat):not(.dept-card):not(.login-card):hover {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md), 0 0 24px -14px var(--accent-glow);
+}
+
+/* Stat cards get a true 3D tilt */
+.stat {
+  transition:
+    background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.stat:hover {
+  transform: translateY(-4px) perspective(700px) rotateX(3deg) rotateY(-3deg);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-md), 0 14px 30px -18px var(--accent-glow);
+}
+
+/* Department cards tilt the other way for depth */
+.dept-card {
+  transition:
+    background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.dept-card:hover {
+  transform: translateY(-4px) perspective(700px) rotateX(2.5deg) rotateY(3deg);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-md), 0 14px 30px -18px var(--accent-glow);
+}
+
+/* Employee rows: accent bar slides in on the hovered row */
+.table tbody tr {
+  transition: background 0.14s ease, box-shadow 0.14s ease;
+}
+.table tbody tr:hover {
+  background: var(--row-hover);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.table tbody tr:hover td { color: var(--text); }
+
+/* Chips pop slightly */
+.chip { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.chip:hover { transform: scale(1.06); }
+
+/* Buttons: lift with shadow, press down on click */
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(1px) scale(0.98); }
+.btn--primary {
+  transition: transform 0.18s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.18s ease, filter 0.15s ease;
+}
+.btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px -6px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn--danger:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -8px var(--danger); }
+
+/* Inputs get a soft ring on hover */
+.input:hover, .select:hover { box-shadow: 0 0 0 2px var(--input-ring); }
+
+/* Avatars flip slightly toward the viewer */
+.emp-avatar,
+.user-card__avatar,
+.hero__avatar,
+.face__result-avatar {
+  transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.2s ease;
+}
+.emp-avatar:hover,
+.user-card__avatar:hover,
+.hero__avatar:hover {
+  transform: perspective(300px) rotateY(14deg) scale(1.06);
+  box-shadow: 0 8px 18px -8px var(--accent-glow);
+}
+
+/* Sortable headers respond to hover */
+.sortable { transition: color 0.14s ease; }
+.sortable:hover { color: var(--accent-strong); }
+
+/* Login card: gentle tilt with the glow tracking */
+.login-card {
+  transition:
+    background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.login-card:hover {
+  transform: translateY(-4px) perspective(900px) rotateX(1.5deg);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-md), 0 24px 60px -24px var(--accent-glow);
+}
+
+/* Login submit button: stronger 3D press */
+.login-submit:hover { transform: translateY(-2px) scale(1.01); }
+.login-submit:active { transform: translateY(1px) scale(0.99); }
+
+/* Respect users who prefer no motion */
+@media (prefers-reduced-motion: reduce) {
+  .glass, .stat, .dept-card, .login-card, .btn, .chip,
+  .table tbody tr, .emp-avatar, .user-card__avatar, .hero__avatar {
+    transition: none !important;
+  }
+  .glass:hover, .stat:hover, .dept-card:hover, .login-card:hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   Entrance motion, focus rings & motion preference
+   ============================================================ */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--hairline);
+  border-top-color: var(--accent);
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinner--sm { width: 14px; height: 14px; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+.panel,
+.table-card,
+.settings__card {
+  animation: fade-up 0.34s ease both;
+}
+
+.panel:nth-child(2),
+.table-card:nth-child(2),
+.settings__card:nth-child(2) { animation-delay: 0.05s; }
+.panel:nth-child(3),
+.settings__card:nth-child(3) { animation-delay: 0.1s; }
+.settings__card:nth-child(4) { animation-delay: 0.15s; }
+.settings__card:nth-child(5) { animation-delay: 0.2s; }
+
+/* Keyboard focus is always visible, mouse clicks are not outlined */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Motion switch in Settings (persisted in localStorage) */
+html[data-motion='off'] *,
+html[data-motion='off'] *::before,
+html[data-motion='off'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel, .table-card, .settings__card { animation: none; }
+}
 
 /* ============================================================
    Glass surfaces

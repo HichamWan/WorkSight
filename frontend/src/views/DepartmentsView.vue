@@ -13,7 +13,16 @@
 
     <!-- Department cards -->
     <section class="depts__grid">
-      <article v-for="d in departments" :key="d.name" class="glass dept-card">
+      <article
+        v-for="d in departments"
+        :key="d.name"
+        class="glass dept-card dept-card--link"
+        role="link"
+        tabindex="0"
+        :title="`${t('viewAll')} · ${d.name}`"
+        @click="goDepartment(d.name)"
+        @keydown.enter.prevent="goDepartment(d.name)"
+      >
         <header class="dept-card__head">
           <h3 class="dept-card__name">{{ d.name }}</h3>
           <span class="chip chip--accent">{{ d.headcount }} {{ t('members') }}</span>
@@ -62,8 +71,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="d in paged" :key="d.name">
-                <td>{{ d.name }}</td>
+              <tr v-for="d in paged" :key="d.name" class="dept-row--link" @click="goDepartment(d.name)">
+                <td class="strong">{{ d.name }}</td>
                 <td>{{ d.headcount }}</td>
                 <td>{{ d.present }}</td>
                 <td>
@@ -92,6 +101,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '../api'
 import { useI18n } from '../i18n'
 import { useTable } from '../table'
@@ -100,6 +110,11 @@ import Pager from '../components/Pager.vue'
 
 const { t } = useI18n()
 const toast = useToast()
+const router = useRouter()
+
+function goDepartment(name) {
+  router.push({ path: '/employees', query: { department: name } })
+}
 
 const employees = ref([])
 const attendance = ref([])
@@ -258,6 +273,14 @@ function rateTone(rate) {
 }
 
 .dept-card { padding: 18px; }
+
+.dept-card--link { cursor: pointer; }
+.dept-card--link:focus-visible { outline: 2px solid var(--accent); }
+
+.dept-row--link { cursor: pointer; transition: background 0.15s ease; }
+.dept-row--link:hover { background: var(--accent-soft); }
+.dept-row--link .strong { color: var(--accent-strong); }
+.dept-row--link:focus-visible { outline: 2px solid var(--accent); }
 .dept-card__head {
   display: flex;
   align-items: center;

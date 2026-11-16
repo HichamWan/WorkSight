@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Path, File, Upload
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import io
 from app.auth.crypto import verify_password, hash_password, create_access_token, generate_face_embedding, compare_face_embeddings
 from app.auth.dependencies import get_current_user, require_role
@@ -73,14 +73,7 @@ def hr_login(payload: HRLoginReq):
         "message": "Login successful",
         "access_token": access_token,
         "token_type": "bearer",
-        "user": {
-            "id": user["id"],
-            "client_id": user["client_id"],
-            "username": user["username"],
-            "email": user["email"],
-            "role": user["role"],
-            "status": user["status"]
-        }
+        "user": _public_user(user)
     }
 
 @router.post("/hr/auth/register")
@@ -133,14 +126,121 @@ def hr_register(payload: HRRegisterReq):
         "message": "Account created successfully",
         "access_token": access_token,
         "token_type": "bearer",
-        "user": {
-            "id": user["id"],
-            "client_id": user["client_id"],
-            "username": user["username"],
-            "email": user["email"],
-            "role": user["role"],
-            "status": user["status"]
+        "user": _public_user(user)
+    }
+
+class ProfileUpdateReq(BaseModel):
+    email: EmailStr
+
+# ----------------------------- Avatar uploads ------------------------------
+import os as _os
+import shutil as _shutil
+import uuid as _uuid
+from fastapi import UploadFile, File
+
+AVATAR_DIR = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(__file__))), "uploads", "avatars")
+_os.makedirs(AVATAR_DIR, exist_ok=True)
+ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+MAX_AVATAR_BYTES = 2 * 1024 * 1024  # 2 MB
+
+def _public_user(user):
+    """User dict safe to return to the client, including the avatar filename."""
+    return {
+        "id": user["id"],
+        "client_id": user["client_id"],
+        "username": user["username"],
+        "email": user["email"],
+        "role": user["role"],
+        "status": user["status"],
+        "avatar": user.get("avatar")
+    }
+
+@router.post("/hr/auth/profile/avatar")
+async def upload_avatar(file: UploadFile = File(...), current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+    user = next((u for u in db_users if u["id"] == current_user["user_id"]), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="User account profile missing")
+    if file.content_type not in ALLOWED_AVATAR_TYPES:
+        raise HTTPException(status_code=415, detail="Only JPEG, PNG, WebP or GIF images are allowed")
+    contents = await file.read()
+    if len(contents) > MAX_AVATAR_BYTES:
+        raise HTTPException(status_code=413, detail="Image must be smaller than 2 MB")
+
+    ext = {"image/jpeg": ".jpg", "image/png": ".png", "image/webp": ".webp", "image/gif": ".gif"}[file.content_type]
+    filename = f"user{user['id']}_{_uuid.uuid4().hex[:8]}{ext}"
+    with open(_os.path.join(AVATAR_DIR, filename), "wb") as fh:
+        fh.write(contents)
+
+    # Remove the previous avatar file so uploads don't pile up
+    old = user.get("avatar")
+    if old:
+        old_path = _os.path.join(AVATAR_DIR, _os.path.basename(old))
+        if _os.path.exists(old_path):
+            _os.remove(old_path)
+
+    user["avatar"] = filename
+    save_to_json()
+    return {"success": True, "message": "Avatar updated", "user": _public_user(user)}
+
+@router.delete("/hr/auth/profile/avatar")
+def remove_avatar(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+    user = next((u for u in db_users if u["id"] == current_user["user_id"]), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="User account profile missing")
+    old = user.get("avatar")
+    if old:
+        old_path = _os.path.join(AVATAR_DIR, _os.path.basename(old))
+        if _os.path.exists(old_path):
+            _os.remove(old_path)
+        user.pop("avatar", None)
+        save_to_json()
+    return {"success": True, "message": "Avatar removed", "user": _public_user(user)}
+
+@router.get("/hr/auth/profile")
+def get_profile(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+    """Extended profile: account info + company details + tenant statistics."""
+    user = next((u for u in db_users if u["id"] == current_user["user_id"]), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="User account profile missing")
+    tenant_id = user["client_id"]
+    client = next((c for c in db_clients if c["id"] == tenant_id), None)
+    employees = [e for e in db_employees if e["client_id"] == tenant_id]
+    return {
+        "id": user["id"],
+        "username": user["username"],
+        "email": user["email"],
+        "role": user["role"],
+        "status": user["status"],
+        "avatar": user.get("avatar"),
+        "client_id": tenant_id,
+        "company": {
+            "name": client["company_name"],
+            "code": client["company_code"],
+            "created_at": client.get("created_at")
+        } if client else None,
+        "stats": {
+            "employees": len(employees),
+            "departments": len({e["department"] for e in employees}),
+            "attendance_records": sum(1 for a in db_attendance if a["client_id"] == tenant_id),
+            "pending_leaves": sum(1 for l in db_leaves if l["client_id"] == tenant_id and l["status"] == "pending")
         }
+    }
+
+@router.put("/hr/auth/profile")
+def update_profile(payload: ProfileUpdateReq, current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+    """Update the account email (uniqueness checked across all users)."""
+    user = next((u for u in db_users if u["id"] == current_user["user_id"]), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="User account profile missing")
+    new_email = payload.email.strip().lower()
+    if any(u["email"].lower() == new_email and u["id"] != user["id"] for u in db_users):
+        raise HTTPException(status_code=409, detail="Email already in use")
+    user["email"] = payload.email.strip()
+    save_to_json()
+    return {
+        "success": True,
+        "message": "Profile updated",
+        "user": _public_user(user)
     }
 
 @router.post("/hr/auth/change-password")
@@ -165,14 +265,7 @@ def hr_me(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE
     user = next((u for u in db_users if u["id"] == current_user["user_id"]), None)
     if not user:
         raise HTTPException(status_code=404, detail="User account profile missing")
-    return {
-        "id": user["id"],
-        "client_id": user["client_id"],
-        "username": user["username"],
-        "email": user["email"],
-        "role": user["role"],
-        "status": user["status"]
-    }
+    return _public_user(user)
 
 # ==========================================
 # 8. EMPLOYEES (Scoped by client_id)
@@ -209,7 +302,7 @@ def get_employees(current_user: dict = Depends(require_role(["HR", "MANAGER", "E
 @router.post("/hr/employees")
 def create_employee(payload: EmployeeCreateReq, current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
     tenant_id = current_user["client_id"]
-    new_id = len(db_employees) + 101
+    new_id = max((e["id"] for e in db_employees), default=100) + 1
     new_emp = {
         "id": new_id,
         "client_id": tenant_id, # Bound to current tenant automatically
@@ -263,6 +356,67 @@ def delete_employee(employee_id: int, current_user: dict = Depends(require_role(
     return {"success": True, "message": "Employee profile deleted permanently"}
 
 # ==========================================
+# TENANT DATA HELPERS (used by attendance, dashboard, alerts and reports)
+# ==========================================
+def _fmt_time(iso_str):
+    """Format an ISO datetime string as HH:MM (or None)."""
+    if not iso_str:
+        return None
+    try:
+        return datetime.fromisoformat(iso_str).strftime("%H:%M")
+    except (ValueError, TypeError):
+        return iso_str
+
+def _emp_name(employee_id):
+    emp = next((e for e in db_employees if e["id"] == employee_id), None)
+    return f"{emp['first_name']} {emp['last_name']}" if emp else "Unknown"
+
+def _tenant_employees(tenant_id):
+    return [e for e in db_employees if e["client_id"] == tenant_id]
+
+def _tenant_attendance(tenant_id, start_date=None, end_date=None, employee_id=None):
+    rows = [a for a in db_attendance if a["client_id"] == tenant_id]
+    if start_date:
+        rows = [a for a in rows if a["date"] >= start_date.isoformat()]
+    if end_date:
+        rows = [a for a in rows if a["date"] <= end_date.isoformat()]
+    if employee_id:
+        rows = [a for a in rows if a["employee_id"] == employee_id]
+    rows.sort(key=lambda a: (a["date"], a["id"]))
+    return rows
+
+def _work_hours_totals(tenant_id):
+    """Aggregate worked/overtime/undertime hours per employee for a tenant."""
+    totals = {}
+    for a in _tenant_attendance(tenant_id):
+        t = totals.setdefault(a["employee_id"], {"worked": 0.0, "ot": 0.0, "ut": 0.0})
+        t["worked"] += a.get("worked_hours") or 0
+        t["ot"] += a.get("overtime_hours") or 0
+        t["ut"] += a.get("undertime_hours") or 0
+    return totals
+
+def _reference_date(tenant_id):
+    """Today when records exist, otherwise the most recent recorded date (demo-friendly)."""
+    today = date.today().isoformat()
+    dates = {a["date"] for a in db_attendance if a["client_id"] == tenant_id}
+    return today if today in dates else max(dates, default=today)
+
+def _dashboard_counts(tenant_id, ref_date):
+    """Presence/status counts for the given reference day."""
+    employees = _tenant_employees(tenant_id)
+    rows = [a for a in _tenant_attendance(tenant_id) if a["date"] == ref_date]
+    late = sum(1 for a in rows if a.get("status") == "late")
+    return {
+        "total_employees": len(employees),
+        "present": len(rows),
+        "absent": max(0, len(employees) - len(rows)),
+        "late": late,
+        "on_time": len(rows) - late,
+        "overtime": sum(1 for a in rows if (a.get("overtime_hours") or 0) > 0),
+        "undertime": sum(1 for a in rows if (a.get("undertime_hours") or 0) > 0),
+    }
+
+# ==========================================
 # 9. ATTENDANCE (Scoped by client_id)
 # ==========================================
 @router.post("/hr/attendance/check-in")
@@ -270,7 +424,7 @@ def check_in(payload: CheckInReq, current_user: dict = Depends(get_current_user)
     tenant_id = current_user["client_id"]
     
     new_record = {
-        "id": len(db_attendance) + 1001,
+        "id": max((a["id"] for a in db_attendance), default=1000) + 1,
         "employee_id": payload.employee_id,
         "client_id": tenant_id,
         "date": payload.timestamp.date().isoformat(),
@@ -289,21 +443,32 @@ def check_in(payload: CheckInReq, current_user: dict = Depends(get_current_user)
 def check_out(payload: CheckInReq, current_user: dict = Depends(get_current_user)):
     tenant_id = current_user["client_id"]
     record = next((a for a in db_attendance if a["employee_id"] == payload.employee_id and a["check_out"] is None and a["client_id"] == tenant_id), None)
-    
+
     if not record:
+        # No open check-in: create a same-day record anchored at the check-out time
+        # so the worked-hours math below stays honest.
         record = {
-            "id": 1001,
+            "id": max((a["id"] for a in db_attendance), default=1000) + 1,
             "employee_id": payload.employee_id,
             "client_id": tenant_id,
             "date": payload.timestamp.date().isoformat(),
-            "check_in": "2026-09-17T08:52:00"
+            "check_in": payload.timestamp.isoformat(),
+            "status": "on_time",
+            "worked_hours": 0,
+            "overtime_hours": 0,
+            "undertime_hours": 0
         }
         db_attendance.append(record)
-    
+
+    check_in_dt = datetime.fromisoformat(record["check_in"])
+    gross = (payload.timestamp - check_in_dt).total_seconds() / 3600.0
+    worked = round(max(0.0, gross - 0.5), 1)  # 30 min break, same rule as the demo seed
+
     record["check_out"] = payload.timestamp.isoformat()
-    record["worked_hours"] = 9.3
-    record["overtime_hours"] = 1.3
-    record["undertime_hours"] = 0
+    record["worked_hours"] = worked
+    record["overtime_hours"] = round(max(0.0, worked - 9.0), 1)
+    record["undertime_hours"] = 0.0 if worked >= 8 else round(max(0.0, 8.0 - worked), 1)
+    _log_activity(current_user, "check_out", f"{payload.employee_id} at {payload.timestamp.strftime('%H:%M')}")
     return {"success": True, "attendance": record}
 
 @router.get("/hr/attendance")
@@ -314,18 +479,17 @@ def get_attendance(
     current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))
 ):
     tenant_id = current_user["client_id"]
-    scoped_attendance = [a for a in db_attendance if a["client_id"] == tenant_id]
-    
+    scoped_attendance = _tenant_attendance(tenant_id, start_date, end_date, employee_id)
+
     formatted = []
     for att in scoped_attendance:
-        emp = next((e for e in db_employees if e["id"] == att["employee_id"]), {"first_name": "John", "last_name": "Smith"})
         formatted.append({
             "id": att["id"],
             "employee_id": att["employee_id"],
-            "employee_name": f"{emp['first_name']} {emp['last_name']}",
+            "employee_name": _emp_name(att["employee_id"]),
             "date": att["date"],
-            "check_in": "08:52",
-            "check_out": "18:10",
+            "check_in": _fmt_time(att.get("check_in")),
+            "check_out": _fmt_time(att.get("check_out")),
             "status": att["status"],
             "worked_hours": att["worked_hours"],
             "overtime_hours": att["overtime_hours"],
@@ -338,73 +502,172 @@ def get_attendance(
 # ==========================================
 @router.get("/hr/work-hours")
 def get_work_hours(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
-    return {
-        "work_hours": [
-            {"employee_id": 101, "employee_name": "John Smith", "total_worked_hours": 168.5, "total_overtime_hours": 8.5, "total_undertime_hours": 2.0}
-        ]
-    }
+    tenant_id = current_user["client_id"]
+    totals = _work_hours_totals(tenant_id)
+    work_hours = [
+        {
+            "employee_id": emp_id,
+            "employee_name": _emp_name(emp_id),
+            "total_worked_hours": round(t["worked"], 1),
+            "total_overtime_hours": round(t["ot"], 1),
+            "total_undertime_hours": round(t["ut"], 1)
+        }
+        for emp_id, t in totals.items()
+    ]
+    work_hours.sort(key=lambda w: w["total_worked_hours"], reverse=True)
+    return {"work_hours": work_hours}
 
 @router.get("/hr/dashboard/summary")
 def get_dashboard_summary(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
-    return {"total_employees": 50, "present": 42, "absent": 8, "late": 5, "on_time": 37, "overtime": 6, "undertime": 3}
+    tenant_id = current_user["client_id"]
+    return _dashboard_counts(tenant_id, _reference_date(tenant_id))
 
 @router.get("/hr/dashboard/today")
 def get_dashboard_today(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
-    return {"date": "2026-09-17", "total_employees": 50, "checked_in": 42, "not_checked_in": 8, "late": 5, "on_time": 37}
+    tenant_id = current_user["client_id"]
+    ref = _reference_date(tenant_id)
+    counts = _dashboard_counts(tenant_id, ref)
+    return {
+        "date": ref,
+        "total_employees": counts["total_employees"],
+        "checked_in": counts["present"],
+        "not_checked_in": counts["absent"],
+        "late": counts["late"],
+        "on_time": counts["on_time"]
+    }
 
 @router.get("/hr/dashboard/analytics")
 def get_dashboard_analytics(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
-    return {
-        "attendance_trend": [
-            {"date": "2026-09-15", "present": 45, "late": 3, "absent": 5},
-            {"date": "2026-09-16", "present": 44, "late": 4, "absent": 6},
-            {"date": "2026-09-17", "present": 42, "late": 5, "absent": 8}
-        ]
-    }
+    tenant_id = current_user["client_id"]
+    total_employees = len(_tenant_employees(tenant_id))
+    dates = sorted({a["date"] for a in _tenant_attendance(tenant_id)})[-7:]
+    attendance_trend = []
+    for day in dates:
+        rows = [a for a in _tenant_attendance(tenant_id) if a["date"] == day]
+        present = len(rows)
+        late = sum(1 for a in rows if a.get("status") == "late")
+        attendance_trend.append({
+            "date": day,
+            "present": present,
+            "late": late,
+            "absent": max(0, total_employees - present)
+        })
+    return {"attendance_trend": attendance_trend}
 
 # ==========================================
-# 12. ALERTS
+# 12. ALERTS (computed from real attendance data)
 # ==========================================
+def _tenant_alerts(tenant_id, alert_type):
+    """Build alert objects from the tenant's last-30-days attendance records."""
+    cutoff = (datetime.now() - timedelta(days=30)).date().isoformat()
+    rows = [a for a in _tenant_attendance(tenant_id) if a["date"] >= cutoff]
+
+    if alert_type == "overtime":
+        rows = [a for a in rows if (a.get("overtime_hours") or 0) > 0]
+        message = lambda a: f"{_emp_name(a['employee_id'])} worked {a['overtime_hours']}h overtime"
+    elif alert_type == "late":
+        rows = [a for a in rows if a.get("status") == "late"]
+        message = lambda a: f"{_emp_name(a['employee_id'])} arrived late on {a['date']}"
+    else:  # under_time
+        rows = [a for a in rows if (a.get("undertime_hours") or 0) > 0]
+        message = lambda a: f"{_emp_name(a['employee_id'])} was {a['undertime_hours']}h short on {a['date']}"
+
+    alerts = [
+        {
+            "id": a["id"],
+            # Globally unique alert key: one attendance row can raise several alert types.
+            "key": f"{alert_type}:{a['id']}",
+            "employee_id": a["employee_id"],
+            "employee_name": _emp_name(a["employee_id"]),
+            "type": alert_type,
+            "message": message(a),
+            "date": a["date"],
+            "value": a.get("overtime_hours") if alert_type == "overtime"
+                     else a.get("undertime_hours") if alert_type == "under_time"
+                     else 0,
+            "status": "active"
+        }
+        for a in rows
+    ]
+    alerts.sort(key=lambda x: x["date"], reverse=True)
+    return alerts
+
+class MarkAlertsReadReq(BaseModel):
+    keys: list[str] = []
+    all: bool = False
+
+def _user_row(current_user: dict):
+    return next((u for u in db_users if u["id"] == current_user["user_id"]), None)
+
+def _read_alert_keys(user) -> set:
+    return set((user or {}).get("read_alerts") or [])
+
+def _decorate_alerts(alerts, user):
+    """Attach the per-user `read` flag and return (alerts, unread_count)."""
+    read_keys = _read_alert_keys(user)
+    for alert in alerts:
+        alert["read"] = alert["key"] in read_keys
+    return alerts, sum(1 for a in alerts if not a["read"])
+
+def _store_read_keys(user, keys):
+    # Keep the list bounded: only remember keys that still exist as alerts.
+    user["read_alerts"] = sorted(set(keys))
+    save_to_json()
+
 @router.get("/hr/alerts")
 def get_alerts(current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
-    return {
-        "alerts": [
-            {
-                "id": 1, 
-                "employee_id": 101, 
-                "employee_name": "John Smith", 
-                "type": "overtime", 
-                "message": "Employee worked overtime", 
-                "date": "2026-09-17", 
-                "value": 2.5, 
-                "status": "active"
-            }
-        ],
-        "total": 1
-    }
+    tenant_id = current_user["client_id"]
+    alerts = (_tenant_alerts(tenant_id, "overtime")
+              + _tenant_alerts(tenant_id, "late")
+              + _tenant_alerts(tenant_id, "under_time"))
+    alerts.sort(key=lambda x: x["date"], reverse=True)
+
+    user = _user_row(current_user)
+    alerts, unread = _decorate_alerts(alerts, user)
+    return {"alerts": alerts, "total": len(alerts), "unread": unread}
+
+@router.post("/hr/alerts/read")
+def mark_alerts_read(payload: MarkAlertsReadReq, current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
+    """Mark alerts as read for the signed-in user (persisted per account)."""
+    tenant_id = current_user["client_id"]
+    user = _user_row(current_user)
+    if not user:
+        raise HTTPException(status_code=404, detail="User account profile missing")
+
+    live = (_tenant_alerts(tenant_id, "overtime")
+            + _tenant_alerts(tenant_id, "late")
+            + _tenant_alerts(tenant_id, "under_time"))
+    live_keys = {a["key"] for a in live}
+
+    if payload.all:
+        keys = live_keys
+    else:
+        keys = {k for k in payload.keys if k in live_keys}
+    _store_read_keys(user, _read_alert_keys(user) | keys)
+
+    alerts, unread = _decorate_alerts(live, user)
+    return {"success": True, "total": len(alerts), "unread": unread, "read": len(alerts) - unread}
 
 @router.get("/hr/alerts/overtime")
 def get_overtime_alerts(current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
-    return [
-        {
-            "id": 1,
-            "employee_id": 101,
-            "employee_name": "John Smith",
-            "type": "overtime",
-            "message": "Employee worked overtime",
-            "date": "2026-09-17",
-            "value": 2.5,
-            "status": "active"
-        }
-    ]
+    alerts, unread = _decorate_alerts(
+        _tenant_alerts(current_user["client_id"], "overtime"), _user_row(current_user)
+    )
+    return {"alerts": alerts, "total": len(alerts), "unread": unread}
 
 @router.get("/hr/alerts/under-time")
 def get_undertime_alerts(current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
-    return {"alerts": [], "total": 0}
+    alerts, unread = _decorate_alerts(
+        _tenant_alerts(current_user["client_id"], "under_time"), _user_row(current_user)
+    )
+    return {"alerts": alerts, "total": len(alerts), "unread": unread}
 
 @router.get("/hr/alerts/late")
 def get_late_alerts(current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
-    return {"alerts": [], "total": 0}
+    alerts, unread = _decorate_alerts(
+        _tenant_alerts(current_user["client_id"], "late"), _user_row(current_user)
+    )
+    return {"alerts": alerts, "total": len(alerts), "unread": unread}
 
 
 # ==========================================
@@ -551,37 +814,40 @@ def set_leave_status(leave_id: int, payload: LeaveStatusReq, current_user: dict 
 
 
 # ==========================================
-# 15. REPORTS
+# 15. REPORTS (built from real tenant data)
 # ==========================================
 @router.get("/hr/reports/attendance")
 def report_attendance(current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
-    return {
-        "report_type": "attendance",
-        "data": [
-            {
-                "id": 1001,
-                "employee_id": 101,
-                "employee_name": "John Smith",
-                "date": "2026-09-17",
-                "check_in": "08:52",
-                "check_out": "18:10",
-                "status": "on_time"
-            }
-        ]
-    }
+    tenant_id = current_user["client_id"]
+    data = [
+        {
+            "id": a["id"],
+            "employee_id": a["employee_id"],
+            "employee_name": _emp_name(a["employee_id"]),
+            "date": a["date"],
+            "check_in": _fmt_time(a.get("check_in")),
+            "check_out": _fmt_time(a.get("check_out")),
+            "status": a["status"]
+        }
+        for a in _tenant_attendance(tenant_id)
+    ]
+    return {"report_type": "attendance", "data": data}
 
 @router.get("/hr/reports/work-hours")
 def report_work_hours(current_user: dict = Depends(require_role(["HR", "MANAGER"]))):
-    return {
-        "report_type": "work-hours",
-        "data": [
-            {
-                "employee_id": 101,
-                "employee_name": "John Smith",
-                "total_worked_hours": 168.5
-            }
-        ]
-    }
+    tenant_id = current_user["client_id"]
+    totals = _work_hours_totals(tenant_id)
+    data = [
+        {
+            "employee_id": emp_id,
+            "employee_name": _emp_name(emp_id),
+            "total_worked_hours": round(t["worked"], 1),
+            "total_overtime_hours": round(t["ot"], 1),
+            "total_undertime_hours": round(t["ut"], 1)
+        }
+        for emp_id, t in sorted(totals.items(), key=lambda kv: -kv[1]["worked"])
+    ]
+    return {"report_type": "work-hours", "data": data}
 
 @router.get("/hr/reports/export")
 def report_export(
@@ -589,8 +855,18 @@ def report_export(
     format: str = Query(...), 
     current_user: dict = Depends(require_role(["HR", "MANAGER"]))
 ):
+    tenant_id = current_user["client_id"]
     output = io.StringIO()
-    output.write("id,employee_id,date,status\n1001,101,2026-09-17,on_time\n")
+    if report_type == "work-hours":
+        output.write("employee_id,employee_name,total_worked_hours,total_overtime_hours,total_undertime_hours\n")
+        result = report_work_hours(current_user)
+        for row in result["data"]:
+            output.write(f"{row['employee_id']},{row['employee_name']},{row['total_worked_hours']},{row['total_overtime_hours']},{row['total_undertime_hours']}\n")
+    else:
+        output.write("id,employee_id,employee_name,date,check_in,check_out,status\n")
+        result = report_attendance(current_user)
+        for row in result["data"]:
+            output.write(f"{row['id']},{row['employee_id']},{row['employee_name']},{row['date']},{row['check_in'] or ''},{row['check_out'] or ''},{row['status']}\n")
     
     media_type = "text/csv" if format == "csv" else "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     

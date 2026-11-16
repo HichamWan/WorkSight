@@ -1,20 +1,17 @@
 <template>
   <div class="layout">
     <aside class="sidebar glass glass--strong" :class="{ 'sidebar--collapsed': collapsed }">
-      <div class="sidebar__brand">
+      <router-link to="/" class="sidebar__brand sidebar__brand--link" :title="t('dashboard')">
         <div class="brand-mark">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 7v5l3 2" />
-          </svg>
+          <img src="/logo-sm.png" alt="WorkSight" class="brand-mark__img" />
         </div>
         <span v-if="!collapsed" class="brand-name">WorkSight</span>
-        <button class="btn btn--icon sidebar__collapse" :title="collapsed ? 'Expand' : 'Collapse'" @click="toggleCollapse">
+        <button class="btn btn--icon sidebar__collapse" :title="collapsed ? 'Expand' : 'Collapse'" @click.prevent.stop="toggleCollapse">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :style="collapsed ? 'transform: scaleX(-1)' : ''">
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
-      </div>
+      </router-link>
 
       <nav class="sidebar__nav">
         <router-link
@@ -22,8 +19,7 @@
           :key="item.to"
           :to="item.to"
           class="nav-link"
-          active-class="nav-link--active"
-          :exact="item.to === '/'"
+          :class="{ 'nav-link--active': isNavActive(item) }"
           :title="t(item.key)"
         >
           <span class="nav-link__icon" v-html="item.icon"></span>
@@ -32,12 +28,91 @@
       </nav>
 
       <div class="sidebar__footer">
-        <div class="user-card glass--soft">
-          <div class="user-card__avatar">{{ initials }}</div>
-          <div class="user-card__info">
-            <span class="user-card__name">{{ user?.username || 'User' }}</span>
-            <span class="user-card__role muted">{{ currentRole }}</span>
-          </div>
+        <div ref="userWrap" class="user-wrap">
+          <button
+            class="user-card glass--soft"
+            :class="{ 'user-card--open': profileOpen }"
+            :title="t('myProfile')"
+            @click="toggleProfile"
+          >
+            <img
+              v-if="avatarSrc"
+              :src="avatarSrc"
+              :alt="user?.username || 'User'"
+              class="user-card__avatar user-card__avatar--photo"
+            />
+            <img
+              v-else
+              src="/logo-sm.png"
+              alt="WorkSight"
+              class="user-card__avatar user-card__avatar--default"
+            />
+            <div v-if="!collapsed" class="user-card__info">
+              <span class="user-card__name">{{ user?.username || 'User' }}</span>
+              <span class="user-card__role muted">{{ currentRole }}</span>
+            </div>
+            <svg
+              v-if="!collapsed"
+              class="user-card__chevron"
+              :class="{ 'user-card__chevron--up': profileOpen }"
+              viewBox="0 0 24 24" width="14" height="14" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            >
+              <path d="m18 15-6-6-6 6" />
+            </svg>
+          </button>
+
+          <transition name="profile-pop">
+            <div v-if="profileOpen" class="profile-pop">
+              <header class="profile-pop__head">
+                <img
+                  v-if="avatarSrc"
+                  :src="avatarSrc"
+                  :alt="user?.username || 'User'"
+                  class="profile-pop__avatar profile-pop__avatar--photo"
+                />
+                <img
+                  v-else
+                  src="/logo-sm.png"
+                  alt="WorkSight"
+                  class="profile-pop__avatar profile-pop__avatar--default"
+                />
+                <div class="profile-pop__identity">
+                  <strong class="profile-pop__name">{{ user?.username || 'User' }}</strong>
+                  <span class="muted profile-pop__email">{{ user?.email || '—' }}</span>
+                </div>
+                <span class="chip chip--accent">{{ currentRole }}</span>
+              </header>
+
+              <dl class="profile-pop__grid">
+                <div class="profile-pop__row">
+                  <dt class="muted">{{ t('companyInfo') }}</dt>
+                  <dd>{{ profile?.company?.name || '—' }}</dd>
+                </div>
+                <div class="profile-pop__row">
+                  <dt class="muted">{{ t('employees') }}</dt>
+                  <dd>{{ profile?.stats?.employees ?? '—' }}</dd>
+                </div>
+                <div class="profile-pop__row">
+                  <dt class="muted">{{ t('pendingLeaves') }}</dt>
+                  <dd>{{ profile?.stats?.pending_leaves ?? '—' }}</dd>
+                </div>
+                <div class="profile-pop__row">
+                  <dt class="muted">{{ t('memberSince') }}</dt>
+                  <dd>{{ memberSince }}</dd>
+                </div>
+              </dl>
+
+              <div class="profile-pop__actions">
+                <router-link to="/settings" class="btn btn--ghost btn--sm" @click="profileOpen = false">
+                  {{ t('openSettings') }}
+                </router-link>
+                <button class="btn btn--ghost btn--sm" @click="toggleTheme">
+                  {{ theme === 'dark' ? t('light') : t('dark') }}
+                </button>
+              </div>
+            </div>
+          </transition>
         </div>
         <button class="btn btn--ghost btn--sm sidebar__logout" @click="handleLogout">
           {{ t('logout') }}
@@ -56,7 +131,13 @@
         <NotificationsBell />
         <LanguageSwitcher />
         <ThemeToggle />
-        <span class="chip chip--success">{{ t('systemOnline') }}</span>
+        <span
+          class="chip"
+          :class="health === 'ok' ? 'chip--success' : 'chip--danger'"
+          :title="health === 'ok' ? t('connectionOk') : t('connectionFail')"
+        >
+          {{ health === 'ok' ? t('systemOnline') : t('connectionFail') }}
+        </span>
       </header>
 
       <router-view />
@@ -65,10 +146,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../auth'
 import { useI18n } from '../i18n'
+import { useTheme } from '../theme'
 import { api } from '../api'
 import { can, roleLabel } from '../roles'
 import LanguageSwitcher from '../components/LanguageSwitcher.vue'
@@ -141,9 +223,18 @@ const navItems = [
 const visibleNav = computed(() => navItems.filter((item) => can(item.permission, user.value)))
 const currentRole = computed(() => roleLabel(user.value))
 
+// Highlight the section a deep link belongs to (e.g. /employees/12 -> Employees),
+// and never light up Dashboard for nested routes.
+function isNavActive(item) {
+  if (item.to === '/') return route.path === '/'
+  return route.path === item.to || route.path.startsWith(`${item.to}/`)
+}
+
 const pageTitle = computed(() => {
   const item = visibleNav.value.find((n) => n.to === route.path)
-  return item ? t(item.key) : t('dashboard')
+  if (item) return t(item.key)
+  if (route.name === 'employee-detail') return t('employeeProfile')
+  return t('dashboard')
 })
 
 const todayLabel = computed(() =>
@@ -159,6 +250,22 @@ const initials = computed(() =>
   (user.value?.username || 'U').slice(0, 2).toUpperCase()
 )
 
+const avatarSrc = computed(() => api.avatarUrl(user.value?.avatar))
+
+// Real-time health indicator (refreshed every 60s)
+const health = ref('ok')
+async function checkHealth() {
+  try {
+    const res = await api.health()
+    health.value = res?.status === 'ok' ? 'ok' : 'fail'
+  } catch {
+    health.value = 'fail'
+  }
+}
+const healthTimer = setInterval(checkHealth, 60000)
+onBeforeUnmount(() => clearInterval(healthTimer))
+checkHealth()
+
 // Collapsible sidebar (persisted)
 const COLLAPSE_KEY = 'worksight_sidebar_collapsed'
 const collapsed = ref(localStorage.getItem(COLLAPSE_KEY) === '1')
@@ -167,6 +274,51 @@ function toggleCollapse() {
   collapsed.value = !collapsed.value
   localStorage.setItem(COLLAPSE_KEY, collapsed.value ? '1' : '0')
 }
+
+// ---------- Profile popover ----------
+const { theme, toggleTheme } = useTheme()
+const profileOpen = ref(false)
+const profile = ref(null)
+const userWrap = ref(null)
+
+const memberSince = computed(() => {
+  const raw = profile.value?.company?.created_at
+  if (!raw) return '—'
+  const d = new Date(raw)
+  return Number.isNaN(d.getTime()) ? raw : d.toLocaleDateString()
+})
+
+async function loadProfile() {
+  try {
+    profile.value = await api.profile()
+  } catch {
+    profile.value = null
+  }
+}
+
+function toggleProfile() {
+  profileOpen.value = !profileOpen.value
+  if (profileOpen.value) loadProfile()
+}
+
+function onDocClick(e) {
+  if (userWrap.value && !userWrap.value.contains(e.target)) profileOpen.value = false
+}
+
+function onEsc(e) {
+  if (e.key === 'Escape') profileOpen.value = false
+}
+
+onMounted(() => {
+  document.addEventListener('click', onDocClick)
+  document.addEventListener('keydown', onEsc)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocClick)
+  document.removeEventListener('keydown', onEsc)
+})
+
+watch(() => route.path, () => { profileOpen.value = false })
 
 async function handleLogout() {
   try {
@@ -237,12 +389,25 @@ async function handleLogout() {
 .brand-mark {
   width: 36px;
   height: 36px;
-  border-radius: 9px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
-  background: var(--accent-gradient);
-  box-shadow: 0 2px 10px var(--accent-glow);
-  color: #fff;
+  overflow: hidden;
+  background: #070d20;
+  box-shadow: 0 2px 12px -2px var(--accent-glow);
+  transition: transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+
+.brand-mark__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-mark:hover {
+  transform: perspective(200px) rotateY(180deg) scale(1.05);
+  box-shadow: 0 4px 18px -4px var(--accent-glow);
 }
 
 .brand-name {
@@ -250,6 +415,12 @@ async function handleLogout() {
   font-weight: 800;
   letter-spacing: -0.02em;
 }
+
+.sidebar__brand--link {
+  text-decoration: none;
+  color: inherit;
+}
+.sidebar__brand--link:hover .brand-name { color: var(--accent-strong); }
 
 .sidebar__nav {
   display: flex;
@@ -273,8 +444,11 @@ async function handleLogout() {
 }
 
 .nav-link:hover {
-  background: var(--row-hover);
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
   color: var(--text-primary);
+  transform: translateX(5px) perspective(400px) rotateY(-4deg);
+  box-shadow: var(--shadow-soft);
 }
 
 .nav-link--active {
@@ -286,6 +460,15 @@ async function handleLogout() {
 
 .nav-link__icon {
   display: inline-flex;
+  transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.nav-link:hover .nav-link__icon {
+  transform: scale(1.2) rotate(-6deg);
+}
+
+.nav-link--active .nav-link__icon {
+  transform: scale(1.12);
 }
 
 .sidebar__footer {
@@ -296,14 +479,107 @@ async function handleLogout() {
   border-top: 1px solid var(--hairline);
 }
 
+.user-wrap { position: relative; }
+
 .user-card {
   display: flex;
   align-items: center;
   gap: 11px;
+  width: 100%;
   padding: 10px 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border-soft);
   background: var(--glass-fill-c);
+  cursor: pointer;
+  text-align: start;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.user-card:hover,
+.user-card--open {
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-soft);
+}
+
+.user-card__chevron {
+  margin-inline-start: auto;
+  color: var(--text-muted);
+  transition: transform 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+.user-card:hover .user-card__chevron { color: var(--text); }
+.user-card__chevron--up { transform: rotate(180deg); }
+
+/* ---------- Profile popover ---------- */
+.profile-pop {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  inset-inline-start: 0;
+  width: 286px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface-solid);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-md), 0 26px 50px -28px rgba(0, 0, 0, 0.8);
+  z-index: 400;
+}
+
+.profile-pop__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.profile-pop__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent-gradient);
+  box-shadow: 0 4px 14px -6px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.profile-pop__identity { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.profile-pop__name { font-size: 0.9rem; }
+.profile-pop__email { font-size: 0.74rem; overflow: hidden; text-overflow: ellipsis; }
+
+.profile-pop__grid {
+  display: flex;
+  flex-direction: column;
+  margin: 6px 0 10px;
+}
+
+.profile-pop__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--hairline-2);
+}
+.profile-pop__row:last-child { border-bottom: none; }
+.profile-pop__row dd { margin: 0; font-weight: 600; text-align: end; }
+
+.profile-pop__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.profile-pop__actions .btn { flex: 1; justify-content: center; }
+
+.profile-pop-enter-active,
+.profile-pop-leave-active { transition: opacity 0.16s ease, transform 0.16s ease; }
+.profile-pop-enter-from,
+.profile-pop-leave-to { opacity: 0; transform: translateY(6px) scale(0.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-pop-enter-active,
+  .profile-pop-leave-active { transition: none; }
 }
 
 .user-card__avatar {
@@ -318,6 +594,23 @@ async function handleLogout() {
   background: var(--accent);
   flex-shrink: 0;
 }
+
+.user-card__avatar--photo,
+.profile-pop__avatar--photo {
+  object-fit: cover;
+  border: 2px solid var(--accent-border);
+}
+
+/* Default avatar = WorkSight logo on a dark disc so the artwork never bleeds white */
+.user-card__avatar--default,
+.profile-pop__avatar--default {
+  object-fit: cover;
+  background: #070d20;
+  border: 2px solid var(--border-strong);
+  transform: scale(1.02);
+}
+
+.profile-pop__avatar--photo { width: 38px; height: 38px; }
 
 .user-card__info {
   display: flex;
@@ -354,6 +647,10 @@ async function handleLogout() {
   display: flex;
   align-items: center;
   padding: 16px 22px;
+  /* backdrop-filter creates a stacking context; keep the topbar (and its
+     dropdown menus: notifications, search, language) above the page panels */
+  position: relative;
+  z-index: 100;
 }
 
 .topbar__title {

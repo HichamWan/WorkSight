@@ -73,8 +73,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="e in employees" :key="e.id">
-                <td>{{ e.first_name }} {{ e.last_name }}</td>
+              <tr v-for="e in employees" :key="e.id" class="face__row--link" @click="router.push(`/employees/${e.id}`)">
+                <td class="strong">{{ e.first_name }} {{ e.last_name }}</td>
                 <td>{{ e.department || '—' }}</td>
                 <td>
                   <span class="chip" :class="e.face_registered ? 'chip--success' : 'chip--warning'">
@@ -149,6 +149,9 @@
             <button class="btn btn--ghost" :disabled="busy" @click="recordCheck('out')">
               {{ t('checkOutAction') }}
             </button>
+            <router-link :to="`/employees/${result.employee_id}`" class="btn btn--ghost">
+              {{ t('viewProfile') }}
+            </router-link>
           </div>
         </div>
 
@@ -168,7 +171,7 @@
 
 <script setup>
 import { ref, computed, onBeforeUnmount } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api } from '../api'
 import { useI18n } from '../i18n'
 import { useToast } from '../toast'
@@ -176,6 +179,9 @@ import { useToast } from '../toast'
 const { t } = useI18n()
 const toast = useToast()
 const route = useRoute()
+const router = useRouter()
+
+// enrollment table rows are clickable; keep cursor affordance via class below
 
 const mode = ref('enroll')
 const tabs = computed(() => [
@@ -364,6 +370,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.face__row--link { cursor: pointer; transition: background 0.15s ease; }
+.face__row--link:hover { background: var(--accent-soft); }
+.face__row--link:focus-visible { outline: 2px solid var(--accent); }
+
 .face {
   display: flex;
   flex-direction: column;

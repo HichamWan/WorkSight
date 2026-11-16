@@ -74,8 +74,10 @@
             <tbody>
               <tr v-for="l in paged" :key="l.id">
                 <td>
-                  <span class="leaves__name">{{ l.employee_name }}</span>
-                  <span class="muted leaves__dept">{{ l.department || l.employee_code }}</span>
+                  <router-link :to="`/employees/${l.employee_id}`" class="leaves__link">
+                    <span class="leaves__name">{{ l.employee_name }}</span>
+                    <span class="muted leaves__dept">{{ l.department || l.employee_code }}</span>
+                  </router-link>
                 </td>
                 <td>{{ l.start_date }}</td>
                 <td>{{ l.end_date }}</td>
@@ -255,6 +257,15 @@ onMounted(load)
 .leaves__name { display: block; font-weight: 600; }
 .leaves__dept { font-size: 0.76rem; }
 .leaves__reason-cell { max-width: 260px; }
+
+.leaves__link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  transition: color 0.15s ease;
+}
+.leaves__link:hover { color: var(--accent-strong); }
+.leaves__link:hover .leaves__dept { text-decoration: underline; }
 
 .leaves__actions { display: flex; gap: 8px; }
 
