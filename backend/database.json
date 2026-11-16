@@ -1840,6 +1840,20 @@
             "status": "active",
             "face_registered": false,
             "created_at": "2026-08-30T19:33:32.336795"
+        },
+        {
+            "id": 203,
+            "client_id": 1,
+            "employee_code": "1003",
+            "first_name": "org3",
+            "last_name": ".",
+            "email": "test@gmail.com",
+            "phone": "123456789",
+            "department": "Sales",
+            "position": "Manager",
+            "status": "active",
+            "face_registered": false,
+            "created_at": "2026-11-17T00:57:15.879814"
         }
     ],
     "db_attendance": [
@@ -27886,6 +27900,14 @@
             "action": "check_out",
             "detail": "103 at 21:39",
             "created_at": "2026-11-15T21:39:14.936946"
+        },
+        {
+            "id": 9139,
+            "client_id": 1,
+            "username": "alice",
+            "action": "employee_created",
+            "detail": "org3 . (1003)",
+            "created_at": "2026-11-17T00:57:15.880272"
         }
     ],
     "db_face_embeddings": {

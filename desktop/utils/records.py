@@ -47,5 +47,16 @@ class RecordStore:
         self.save()
         return record
 
+    def pending(self):
+        """Copies of the records that were not sent yet, oldest first."""
+        return [dict(r) for r in self.records if not r["synced"]]
+
+    def mark_synced(self, ids):
+        ids = set(ids)
+        for r in self.records:
+            if r["id"] in ids:
+                r["synced"] = True
+        self.save()
+
     def recent(self, limit=100):
         return list(reversed(self.records[-limit:]))

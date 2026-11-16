@@ -15,9 +15,10 @@ class ApiClient:
     def __init__(self):
         self.session = requests.Session()
         self.token = None
+        self._creds = None      # kept in memory only, used to log in again quietly
 
-    def request(self, method, path, **kwargs):
-        headers = kwargs.pop("headers", {})
+    def request(self, method, path, _retry=True, **kwargs):
+        headers = dict(kwargs.pop("headers", {}))
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
         try:
@@ -28,6 +29,9 @@ class ApiClient:
         except requests.exceptions.Timeout:
             raise ApiError("The server took too long to answer")
         if r.status_code == 401:
+            if _retry and self._creds and path != "/hr/auth/login":
+                self.login(*self._creds)          # token expired: log in again
+                return self.request(method, path, _retry=False, **kwargs)
             raise ApiError("Please log in again", 401)
         if not r.ok:
             try:
@@ -54,6 +58,7 @@ class ApiClient:
         if not token:
             raise ApiError(f"Logged in, but no token found in: {data}")
         self.token = token
+        self._creds = (username, password)
         return data
 
 

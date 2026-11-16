@@ -1,6 +1,9 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
 from PySide6.QtCore import Signal, Qt
 
+from api.client import api
+from workers.api_worker import run_async
+
 
 class LoginPage(QWidget):
     login_success = Signal()   # tells the main window "login worked"
@@ -12,8 +15,8 @@ class LoginPage(QWidget):
         title.setStyleSheet("font-size: 28px; font-weight: bold;")
         title.setAlignment(Qt.AlignCenter)
 
-        self.company = QLineEdit()
-        self.company.setPlaceholderText("Company name")
+        self.username = QLineEdit()
+        self.username.setPlaceholderText("Username")
 
         self.password = QLineEdit()
         self.password.setPlaceholderText("Password")
@@ -23,20 +26,38 @@ class LoginPage(QWidget):
         self.error.setStyleSheet("color: red;")
         self.error.setAlignment(Qt.AlignCenter)
 
-        button = QPushButton("Login")
-        button.clicked.connect(self.try_login)
-        self.password.returnPressed.connect(self.try_login)  # Enter key works too
+        self.button = QPushButton("Login")
+        self.button.clicked.connect(self.try_login)
+        self.username.returnPressed.connect(self.try_login)
+        self.password.returnPressed.connect(self.try_login)
 
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignCenter)
-        for w in (title, self.company, self.password, self.error, button):
+        for w in (title, self.username, self.password, self.error, self.button):
             w.setMaximumWidth(320)
             layout.addWidget(w, alignment=Qt.AlignCenter)
 
     def try_login(self):
-        if not self.company.text().strip() or not self.password.text():
-            self.error.setText("Please enter company name and password")
+        name = self.username.text().strip()
+        pw = self.password.text()
+        if not name or not pw:
+            self.error.setText("Please enter username and password")
             return
-        # TODO: later, check these against the server
         self.error.setText("")
+        self.button.setEnabled(False)
+        self.button.setText("Logging in...")
+        # runs in the background so the window never freezes
+        run_async(api.login, self.on_success, self.on_fail, name, pw)
+
+    def on_success(self, _result):
+        self._reset_button()
+        self.password.clear()
         self.login_success.emit()
+
+    def on_fail(self, message):
+        self._reset_button()
+        self.error.setText(message)
+
+    def _reset_button(self):
+        self.button.setEnabled(True)
+        self.button.setText("Login")

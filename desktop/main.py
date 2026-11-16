@@ -18,13 +18,13 @@ class MainWindow(QMainWindow):
 
         self.engine = FaceEngine()
         self.store = EmployeeStore()
-        self.record_store = RecordStore()           # <-- new
+        self.record_store = RecordStore()           
 
         self.login = LoginPage()
-        self.camera = CameraPage(self.engine, self.store, self.record_store)   # <-- changed
+        self.camera = CameraPage(self.engine, self.store, self.record_store)   
         self.register_page = RegisterPage(self.engine, self.store)
-        self.records = RecordsPage(self.record_store)                          # <-- changed
-        self.employee_list = EmployeeListPage(self.store)                     # <-- new
+        self.records = RecordsPage(self.record_store, self.store)                       
+        self.employee_list = EmployeeListPage(self.store)                    
 
         self.stack = QStackedWidget()
         for page in (self.login, self.camera, self.register_page,
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         if page is self.camera or page is self.register_page:
             page.start_camera()
         if page is self.records:
-            self.records.refresh()                                         # <-- new
+            self.records.refresh()                                        
         if page is self.employee_list:
             self.employee_list.refresh()
 
