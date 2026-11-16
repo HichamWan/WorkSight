@@ -5,6 +5,13 @@ pip install -r requirements.txt
 cd backend
 python uvicorn app.main:app --reload --port 8000
 * Open the Interactive API docs to test everything: http://localhost:8000/api/docs
+# Terminal 1 — backend
+cd d:\WorkSight\backend
+python -m uvicorn app.main:app --port 8000
+
+# Terminal 2 — frontend
+cd d:\WorkSight\frontend
+npm run dev
 
 ## 🧪 2. How to test the Face AI & Multi-Tenancy
 To test the flow from start to finish in the browser docs link, follow these steps in order:
