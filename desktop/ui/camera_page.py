@@ -1,11 +1,12 @@
 import time
 import cv2
+import config
 from PySide6.QtWidgets import QVBoxLayout, QLabel
 from PySide6.QtCore import Qt
 from ui.camera_base import CameraWidget
 
 CONFIRM_FRAMES = 3      # same person must match this many checks in a row
-COOLDOWN_SECONDS = 30   # ignore the same person for this long after a record
+COOLDOWN_SECONDS = getattr(config, "COOLDOWN_SECONDS", 180)
 BANNER_SECONDS = 4      # how long the result message stays on screen
 
 

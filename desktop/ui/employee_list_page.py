@@ -55,6 +55,7 @@ class EmployeeListPage(QWidget):
         edit_button = QPushButton("Edit selected")
         edit_button.clicked.connect(self.edit_selected)
         delete_button = QPushButton("Delete selected")
+        delete_button.setObjectName("danger")
         delete_button.clicked.connect(self.delete_selected)
 
         self.message = QLabel("")

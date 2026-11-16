@@ -51,6 +51,7 @@ class RegisterPage(CameraWidget):
         form.addRow("Position", self.position_input)
 
         self.register_button = QPushButton(BUTTON_TEXT)
+        self.register_button.setObjectName("primary")
         self.register_button.clicked.connect(self.begin_capture)
 
         self.message = QLabel("")

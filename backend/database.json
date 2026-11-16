@@ -473,7 +473,7 @@
             "id": 105,
             "client_id": 1,
             "employee_code": "EMP105",
-            "first_name": "Lucas",
+            "first_name": "Lucas1",
             "last_name": "Nguyen",
             "email": "lucas.nguyen@demo.worksight.io",
             "phone": "+1-555-289-3398",
@@ -26372,6 +26372,30 @@
             "worked_hours": 7.5,
             "overtime_hours": 0.0,
             "undertime_hours": 0.5
+        },
+        {
+            "id": 3044,
+            "employee_id": 203,
+            "client_id": 1,
+            "date": "2026-11-17",
+            "check_in": "2026-11-17T00:57:35",
+            "check_out": "2026-11-17T01:16:48",
+            "status": "on_time",
+            "worked_hours": 0.0,
+            "overtime_hours": 0.0,
+            "undertime_hours": 8.0
+        },
+        {
+            "id": 3045,
+            "employee_id": 203,
+            "client_id": 1,
+            "date": "2026-11-17",
+            "check_in": "2026-11-17T01:35:06",
+            "check_out": "2026-11-17T01:36:49",
+            "status": "on_time",
+            "worked_hours": 0.0,
+            "overtime_hours": 0.0,
+            "undertime_hours": 8.0
         }
     ],
     "db_leaves": [
@@ -27908,6 +27932,46 @@
             "action": "employee_created",
             "detail": "org3 . (1003)",
             "created_at": "2026-11-17T00:57:15.880272"
+        },
+        {
+            "id": 9140,
+            "client_id": 1,
+            "username": "alice",
+            "action": "check_in",
+            "detail": "203 at 00:57",
+            "created_at": "2026-11-17T00:57:43.044637"
+        },
+        {
+            "id": 9141,
+            "client_id": 1,
+            "username": "alice",
+            "action": "check_out",
+            "detail": "203 at 01:16",
+            "created_at": "2026-11-17T01:35:26.096905"
+        },
+        {
+            "id": 9142,
+            "client_id": 1,
+            "username": "alice",
+            "action": "check_in",
+            "detail": "203 at 01:35",
+            "created_at": "2026-11-17T01:35:26.101359"
+        },
+        {
+            "id": 9143,
+            "client_id": 1,
+            "username": "alice",
+            "action": "check_out",
+            "detail": "203 at 01:36",
+            "created_at": "2026-11-17T01:36:55.095643"
+        },
+        {
+            "id": 9144,
+            "client_id": 1,
+            "username": "alice",
+            "action": "employee_updated",
+            "detail": "Lucas1 Nguyen (EMP105)",
+            "created_at": "2026-11-17T01:37:37.516087"
         }
     ],
     "db_face_embeddings": {

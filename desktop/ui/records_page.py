@@ -20,6 +20,7 @@ class RecordsPage(QWidget):
         self.table.setEditTriggers(QTableWidget.NoEditTriggers)
 
         self.sync_button = QPushButton("Sync now")
+        self.sync_button.setObjectName("primary")
         self.sync_button.clicked.connect(self.sync_now)
 
         self.message = QLabel("")

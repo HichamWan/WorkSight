@@ -27,6 +27,7 @@ class LoginPage(QWidget):
         self.error.setAlignment(Qt.AlignCenter)
 
         self.button = QPushButton("Login")
+        self.button.setObjectName("primary")
         self.button.clicked.connect(self.try_login)
         self.username.returnPressed.connect(self.try_login)
         self.password.returnPressed.connect(self.try_login)
