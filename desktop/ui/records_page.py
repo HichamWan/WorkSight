@@ -3,8 +3,9 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QTableWidget,
 
 
 class RecordsPage(QWidget):
-    def __init__(self):
+    def __init__(self, records):
         super().__init__()
+        self.records = records
 
         title = QLabel("Record History")
         title.setStyleSheet("font-size: 22px; font-weight: bold;")
@@ -13,7 +14,7 @@ class RecordsPage(QWidget):
         self.table.setHorizontalHeaderLabels(
             ["Employee ID", "Name", "Type", "Time", "Sync status"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.table.setEditTriggers(QTableWidget.NoEditTriggers)  # read-only
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
 
         sync_button = QPushButton("Sync now")
         sync_button.clicked.connect(self.sync_now)
@@ -23,19 +24,15 @@ class RecordsPage(QWidget):
         layout.addWidget(self.table)
         layout.addWidget(sync_button)
 
-        self.load_sample_data()
-
-    def load_sample_data(self):
-        rows = [
-            ("1001", "Bat", "Check in", "09:01", "Synced"),
-            ("1002", "Sara", "Check in", "09:05", "Not synced"),
-            ("1001", "Bat", "Check out", "18:02", "Not synced"),
-        ]
-        for row in rows:
-            r = self.table.rowCount()
-            self.table.insertRow(r)
-            for c, value in enumerate(row):
-                self.table.setItem(r, c, QTableWidgetItem(value))
+    def refresh(self):
+        self.table.setRowCount(0)
+        for r in self.records.recent():
+            row = self.table.rowCount()
+            self.table.insertRow(row)
+            values = (r["employee_id"], r["name"], r["type"], r["time"],
+                      "Synced" if r["synced"] else "Not synced")
+            for col, value in enumerate(values):
+                self.table.setItem(row, col, QTableWidgetItem(value))
 
     def sync_now(self):
-        print("Sync clicked (will connect to server later)")
+        print("Sync clicked (will connect to the API in Step 6)")

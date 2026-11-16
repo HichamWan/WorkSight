@@ -37,6 +37,16 @@ class EmployeeStore:
     def name_of(self, emp_id):
         return self.employees[emp_id]["name"]
 
+    def update_employee(self, emp_id, name, role):
+        self.employees[emp_id]["name"] = name
+        self.employees[emp_id]["role"] = role
+        self.save()
+
+    def delete_employee(self, emp_id):
+        if emp_id in self.employees:
+            del self.employees[emp_id]
+            self.save()
+
     def get_known(self):
         """Returns {id: [feature, ...]} in the format the face engine needs."""
         return {
@@ -44,3 +54,5 @@ class EmployeeStore:
                      for f in emp["features"]]
             for emp_id, emp in self.employees.items()
         }
+
+    
