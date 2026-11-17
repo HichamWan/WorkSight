@@ -414,20 +414,6 @@
     ],
     "db_employees": [
         {
-            "id": 101,
-            "client_id": 1,
-            "employee_code": "EMP001",
-            "first_name": "John",
-            "last_name": "Smith",
-            "email": "john@abc.com",
-            "phone": "123456789",
-            "department": "IT",
-            "position": "Software Engineer",
-            "status": "active",
-            "face_registered": true,
-            "created_at": "2026-09-01T09:00:00"
-        },
-        {
             "id": 102,
             "client_id": 1,
             "employee_code": "EMP888",
@@ -1854,6 +1840,20 @@
             "status": "active",
             "face_registered": false,
             "created_at": "2026-11-17T00:57:15.879814"
+        },
+        {
+            "id": 204,
+            "client_id": 1,
+            "employee_code": "12",
+            "first_name": "hicham",
+            "last_name": "ou",
+            "email": "fghfg@gmail.com",
+            "phone": "45645",
+            "department": "hth",
+            "position": "gfjty",
+            "status": "active",
+            "face_registered": false,
+            "created_at": "2026-11-17T10:42:20.647141"
         }
     ],
     "db_attendance": [
@@ -27972,6 +27972,22 @@
             "action": "employee_updated",
             "detail": "Lucas1 Nguyen (EMP105)",
             "created_at": "2026-11-17T01:37:37.516087"
+        },
+        {
+            "id": 9145,
+            "client_id": 1,
+            "username": "alice",
+            "action": "employee_created",
+            "detail": "hicham ou (12)",
+            "created_at": "2026-11-17T10:42:20.647903"
+        },
+        {
+            "id": 9146,
+            "client_id": 1,
+            "username": "alice",
+            "action": "employee_deleted",
+            "detail": "John Smith (EMP001)",
+            "created_at": "2026-11-17T16:14:26.795437"
         }
     ],
     "db_face_embeddings": {
