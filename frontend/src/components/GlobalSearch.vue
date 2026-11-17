@@ -13,7 +13,7 @@
         :placeholder="searchPlaceholder"
         @input="onInput"
         @focus="query && (open = true)"
-        @keydown.esc="open = false"
+        @keydown="onKeydown"
       />
       <span v-if="searching" class="gsearch__spinner"></span>
     </div>
@@ -24,12 +24,27 @@
           {{ searching ? '…' : t('noSearchResults') }}
         </div>
         <ul v-else class="gsearch__list">
-          <li v-for="r in results" :key="r.id">
-            <button class="gsearch__item" @click="go(r)">
+          <li v-for="(r, i) in results" :key="r.id">
+            <button
+              class="gsearch__item"
+              :class="{ 'gsearch__item--active': i === active }"
+              @click="go(r)"
+              @mouseenter="active = i"
+            >
               <span class="gsearch__avatar">{{ initials(r) }}</span>
               <span class="gsearch__text">
-                <span class="gsearch__name">{{ r.first_name }} {{ r.last_name }}</span>
-                <span class="gsearch__meta muted">{{ r.department || '—' }} · {{ r.position || '—' }}</span>
+                <span class="gsearch__name">
+                  <template v-for="(seg, si) in segments(`${r.first_name} ${r.last_name}`)" :key="si">
+                    <mark v-if="seg.hit" class="gsearch__hit">{{ seg.text }}</mark>
+                    <template v-else>{{ seg.text }}</template>
+                  </template>
+                </span>
+                <span class="gsearch__meta muted">
+                  <template v-for="(seg, si) in segments(`${r.department || '—'} · ${r.position || '—'}`)" :key="si">
+                    <mark v-if="seg.hit" class="gsearch__hit">{{ seg.text }}</mark>
+                    <template v-else>{{ seg.text }}</template>
+                  </template>
+                </span>
               </span>
             </button>
           </li>
@@ -59,36 +74,76 @@ const root = ref(null)
 const input = ref(null)
 
 const searchPlaceholder = computed(() => `${t('search')}  (Ctrl+K)`)
+const active = ref(0)
 
 let debounce = null
+let requestId = 0
 
 // Ctrl+K / Cmd+K focuses the search from anywhere
-function onKeydown(e) {
+function onGlobalKeydown(e) {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault()
     input.value?.focus()
+    input.value?.select()
+  }
+}
+
+function onKeydown(e) {
+  if (e.key === 'Escape') {
+    open.value = false
+    return
+  }
+  if (!results.value.length) return
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    open.value = true
+    active.value = (active.value + 1) % results.value.length
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    active.value = (active.value - 1 + results.value.length) % results.value.length
+  } else if (e.key === 'Enter') {
+    e.preventDefault()
+    go(results.value[active.value] || results.value[0])
   }
 }
 
 function onInput() {
   clearTimeout(debounce)
-  if (!query.value.trim()) {
+  const term = query.value.trim()
+  if (!term) {
     open.value = false
     results.value = []
+    searching.value = false
     return
   }
   open.value = true
   searching.value = true
+  const mine = ++requestId
   debounce = setTimeout(async () => {
     try {
-      const res = await api.employees({ search: query.value.trim() })
+      const res = await api.employees({ search: term })
+      if (mine !== requestId) return // a newer keystroke already fired
       results.value = (res?.employees || []).slice(0, 6)
+      active.value = 0
     } catch {
-      results.value = []
+      if (mine === requestId) results.value = []
     } finally {
-      searching.value = false
+      if (mine === requestId) searching.value = false
     }
-  }, 250)
+  }, 220)
+}
+
+// Split a label into plain / matched chunks so hits can be highlighted.
+function segments(text) {
+  const src = String(text ?? '')
+  // Highlight only 2+ character terms: single letters would light up every word.
+  const terms = query.value.trim().toLowerCase().split(/\s+/).filter((w) => w.length >= 2)
+  if (!terms.length || !src) return [{ text: src, hit: false }]
+  const escaped = terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  const parts = src.split(new RegExp(`(${escaped.join('|')})`, 'gi'))
+  return parts
+    .filter((p) => p !== '')
+    .map((p) => ({ text: p, hit: terms.includes(p.toLowerCase()) }))
 }
 
 function initials(r) {
@@ -98,6 +153,7 @@ function initials(r) {
 function go(r) {
   open.value = false
   query.value = ''
+  results.value = []
   router.push({ name: 'employee-detail', params: { id: r.id } })
 }
 
@@ -107,11 +163,11 @@ function onClickOutside(e) {
 
 onMounted(() => {
   document.addEventListener('click', onClickOutside)
-  window.addEventListener('keydown', onKeydown)
+  window.addEventListener('keydown', onGlobalKeydown)
 })
 onBeforeUnmount(() => {
   document.removeEventListener('click', onClickOutside)
-  window.removeEventListener('keydown', onKeydown)
+  window.removeEventListener('keydown', onGlobalKeydown)
 })
 </script>
 
@@ -163,11 +219,12 @@ onBeforeUnmount(() => {
   inset-inline-start: 0;
   width: min(380px, 90vw);
   padding: 8px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  /* Opaque surface + high stack so cards/charts never bleed through the list */
+  background: var(--surface-solid);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  z-index: 60;
+  box-shadow: var(--shadow-md), 0 24px 50px -28px rgba(0, 0, 0, 0.75);
+  z-index: 500;
 }
 
 .gsearch__empty { padding: 16px; text-align: center; font-size: 0.84rem; }
@@ -188,7 +245,15 @@ onBeforeUnmount(() => {
   cursor: pointer;
   transition: background 0.13s ease;
 }
-.gsearch__item:hover { background: var(--row-hover); }
+.gsearch__item:hover,
+.gsearch__item--active { background: var(--accent-soft); }
+
+.gsearch__hit {
+  background: none;
+  color: var(--accent-strong);
+  font-weight: 800;
+  padding: 0;
+}
 
 .gsearch__avatar {
   width: 32px;
