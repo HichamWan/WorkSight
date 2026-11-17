@@ -1,63 +1,116 @@
-# WorkSight Desktop
+# WorkSight Desktop Client
 
-WorkSight Desktop is a small PySide6 desktop prototype for an employee check-in/out terminal. The current app provides a login form, a live camera preview, and a record-history table with sample data.
+The front-desk app of the WorkSight attendance system. It runs on the reception computer, recognizes employees by their face through the webcam, records check-ins and check-outs, and sends them to the WorkSight server.
 
-## Features
+Built by Team Leviathan. Desktop client: Orgil Naranchuluun. Backend API: Hicham. Web dashboard: Noura.
 
-- **Login screen:** asks for a company name and password and opens the app when both fields are filled in. It does not yet authenticate against a server.
-- **Camera screen:** displays a live preview from the first camera device available to OpenCV. It does not yet recognize faces or create attendance events.
-- **Record history:** displays a read-only table populated with sample check-in/out rows. The Sync button is a placeholder and does not contact a server.
-- **Navigation:** switch between the camera and records screens from the menu after leaving the login screen.
+---
+
+## What it does
+
+- **Login** with a WorkSight HR account (username and password, checked by the server).
+- **Check in / out** by looking at the camera. The first scan of the day is a check-in, the next is a check-out, and so on.
+- **Register employees** with their details and a short face scan (5 samples while turning the head slightly). New employees are created on the server; employees that already exist on the server only need the face scan.
+- **Employee list** loaded from the server, with edit and delete.
+- **Record history** with a sync status for every record, and a **Sync now** button.
+- **Kiosk mode**: full screen after login, the menu hides when the mouse is idle (F11 or Esc leaves full screen).
+- **Camera recovery**: if the camera is unplugged, the app shows a message and reconnects by itself.
+
+## How face recognition works
+
+1. **YuNet** finds the face in each camera frame.
+2. **SFace** turns the face into 128 numbers (an embedding).
+3. The embedding is compared with the saved samples using cosine similarity. A score of **0.363 or higher** counts as the same person.
+4. To avoid mistakes, the same person must match **3 times in a row** before a record is made, and the same person is ignored for a **cooldown** period afterwards.
+
+Face samples are stored **only on the desktop computer**. The server stores employees and attendance, not face data.
 
 ## Requirements
 
-- Python 3 compatible with the listed dependencies
-- A camera for the camera-preview screen
-- Windows is the primary target; the camera capture currently uses OpenCV's DirectShow backend
+- Windows 10 or 11
+- A webcam
+- Python 3.14 (the version used during development)
+- The WorkSight backend running and reachable
 
-Python dependencies are listed in [`requirements.txt`](requirements.txt): PySide6, opencv-python, and requests.
-
-## Setup and run
-
-Run these commands from the `desktop` directory in PowerShell:
+## Setup
 
 ```powershell
+cd desktop
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-python main.py
+.venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-If PowerShell does not allow activating the virtual environment, you can invoke its Python directly:
+The two AI model files (YuNet and SFace, `.onnx`) must be in `desktop/assets/models/`.
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe main.py
+## Run
+
+1. Start the backend (in the `backend` folder, with its own virtual environment active):
+
+   ```powershell
+   python -m uvicorn app.main:app --reload --port 8000
+   ```
+
+   Check that `http://localhost:8000/api/docs` opens. The demo account is `alice` / `password`.
+
+2. Start the desktop app:
+
+   ```powershell
+   cd desktop
+   python main.py
+   ```
+
+## Configuration
+
+Settings are in `desktop/config.py`:
+
+| Setting | Meaning | Default |
+|---|---|---|
+| `API_BASE_URL` | Address of the server API | `http://localhost:8000/api` |
+| `REQUEST_TIMEOUT` | Seconds to wait for the server | `5` |
+| `COOLDOWN_SECONDS` | Same person is ignored for this long after a scan | `180` |
+| `FULLSCREEN` | Go full screen after login | `True` |
+| `MENU_HIDE_SECONDS` | Menu hides on the camera page after this idle time | `15` |
+
+For a quick demo of check-in then check-out, set `COOLDOWN_SECONDS = 10`.
+
+## How to use
+
+1. **Log in** with your username and password.
+2. **Register** an employee: enter the code and details, press the button, and look at the camera while slowly turning the head. For an employee who already exists on the server, enter only their code.
+3. **Check in/out**: employees stand in front of the camera. The screen shows their name and "Check in" or "Check out".
+4. **Records**: shows every scan. Records start as "Not synced" and become "Synced" after **Sync now**. If the server is unreachable, records are kept on the computer and sent next time.
+5. **Employees**: edit or delete employees. Deleting removes them from the server and deletes their face data from this computer.
+
+## Project structure
+
 ```
-
-## Project layout
-
-```text
 desktop/
-├── api/                 # Placeholder modules for backend API operations
-├── assets/
-│   ├── icons/            # Reserved for application icons
-│   └── styles.qss        # Reserved for Qt styles
-├── models/               # Placeholder employee and attendance models
-├── tests/                # Placeholder for desktop tests
-├── ui/                   # Active login, camera, and records screens
-├── utils/                # Placeholder shared utilities
-├── views/                # Placeholder view implementation structure
-├── workers/              # Placeholder background API and camera workers
-├── config.py             # API URL, mock mode, camera index, and timeout settings
-├── main.py               # Application entry point and screen navigation
-└── requirements.txt      # Python dependencies
+  main.py                 main window, menu, kiosk behaviour
+  config.py               settings
+  api/client.py           server client (login, requests, automatic re-login)
+  workers/api_worker.py   runs server calls in the background
+  utils/
+    face_engine.py        detection, embedding, matching
+    storage.py            employees and face samples (local JSON)
+    records.py            attendance records (local JSON)
+    sync.py               sends unsynced records to the server
+  ui/                     login, camera, register, employee list, records pages
+  assets/
+    models/               YuNet and SFace model files
+    style.qss             the look of the app
+  data/                   created at run time (not in git)
 ```
 
-The `api`, `models`, `utils`, `views`, and `workers` modules are currently empty scaffolding. The running application is implemented in `main.py` and the three screens under `ui/`.
+## Data and privacy
 
-## Configuration and current limitations
+- `desktop/data/` holds face samples and records. It is listed in `.gitignore` and must never be committed.
+- Face samples are 128-number vectors, not photos.
+- The login is kept in memory only, to log in again when the server session expires. It is never written to disk.
 
-[`config.py`](config.py) defines an API base URL, a mock-mode flag, a camera index, and a request timeout. These settings are not yet connected to the active screens: the camera screen currently uses device index `0`, and the API client and backend operations have not been implemented.
+## Known limitations
 
-There is no persistent local storage or backend integration yet. Login, face recognition, employee registration/deletion, attendance recording, and record synchronization remain future work.
+- No liveness check: a photo of an employee held to the camera could be accepted. This is planned future work.
+- Accuracy was tested with a small number of people. The 0.363 threshold should be re-checked in the real lighting of the deployment.
+- Records are sent when someone presses **Sync now**, not automatically.
+- A packaged installer is not part of this version; the app is started with Python.
