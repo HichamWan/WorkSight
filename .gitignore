@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 data/
+node_modules/
+frontend/dist/
+backend/uvicorn.log
+backend/uvicorn.err

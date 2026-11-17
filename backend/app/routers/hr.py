@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, date, timedelta
 import io
+import re
 from app.auth.crypto import verify_password, hash_password, create_access_token, generate_face_embedding, compare_face_embeddings
 from app.auth.dependencies import get_current_user, require_role
 from app.database import db_users, db_clients, db_employees, db_attendance, db_leaves, db_activity, db_face_embeddings, save_to_json
@@ -293,10 +294,46 @@ def get_activity(current_user: dict = Depends(require_role(["HR", "MANAGER", "EX
     scoped.sort(key=lambda a: a["created_at"], reverse=True)
     return {"activity": scoped[:50], "total": len(scoped)}
 
+_SEARCH_FIELDS = ("first_name", "last_name", "employee_code", "email", "department", "position", "phone")
+
+def _employee_haystack(emp: dict) -> str:
+    return " ".join(str(emp.get(field) or "") for field in _SEARCH_FIELDS).lower()
+
 @router.get("/hr/employees")
-def get_employees(current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))):
+def get_employees(
+    search: Optional[str] = Query(None, description="Free text: every word must match name, code, email, department or position"),
+    department: Optional[str] = Query(None, description="Exact department filter"),
+    current_user: dict = Depends(require_role(["HR", "MANAGER", "EXECUTIVE"]))
+):
     tenant_id = current_user["client_id"]
     scoped_employees = [e for e in db_employees if e["client_id"] == tenant_id]
+
+    if department:
+        target = department.strip().lower()
+        scoped_employees = [e for e in scoped_employees if (e.get("department") or "").lower() == target]
+
+    terms = [w for w in re.split(r"\s+", (search or "").strip().lower()) if w]
+    if terms:
+        # Every term must appear somewhere in the record ("leo fi" -> Leo Fischer,
+        # not anyone whose name merely contains "lo" or "fi").
+        scoped_employees = [e for e in scoped_employees if all(t in _employee_haystack(e) for t in terms)]
+
+        # Rank: first-name prefix, then any field prefix, then everything else.
+        def rank(emp):
+            first = (emp.get("first_name") or "").lower()
+            last = (emp.get("last_name") or "").lower()
+            hay = _employee_haystack(emp)
+            joined = f"{first} {last}"
+            if joined.startswith(terms[0]):
+                return 0
+            if any(word.startswith(terms[0]) for word in first.split() + last.split()):
+                return 1
+            if any(word.startswith(terms[0]) for word in hay.split()):
+                return 2
+            return 3
+
+        scoped_employees = sorted(scoped_employees, key=lambda e: (rank(e), (e.get("first_name") or ""), (e.get("last_name") or "")))
+
     return {"employees": scoped_employees, "total": len(scoped_employees)}
 
 @router.post("/hr/employees")
